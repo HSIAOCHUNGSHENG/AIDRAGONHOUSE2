@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.unzip
     pkgs.glibcLocales
     pkgs.zlib
     pkgs.tk

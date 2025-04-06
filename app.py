@@ -123,6 +123,11 @@ def index():
     news_posts = News.query.filter_by(active=True).order_by(News.publish_date.desc()).limit(3).all()
     return render_template('index.html', services=services, news_posts=news_posts)
 
+@app.route('/googleacb1ce472a34877b.html')
+def google_verification():
+    """提供Google站點驗證文件"""
+    return app.send_static_file('google/googleacb1ce472a34877b.html')
+
 @app.route('/contact', methods=['POST'])
 def contact():
     """處理聯絡表單提交"""

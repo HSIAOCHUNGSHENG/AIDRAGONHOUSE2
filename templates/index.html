@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Josefin+Sans:wght@300;400;600&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-fixes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bauhaus-fonts.css') }}">
     
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
@@ -79,19 +80,19 @@
                     <h3>聯絡我們</h3>
                     <form class="contact-form" action="{{ url_for('contact') }}" method="POST">
                         <div class="form-group">
-                            <label for="name">姓名：</label>
+                            <label for="name" class="required-field">姓名：</label>
                             <input type="text" id="name" name="name" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">電子郵件：</label>
+                            <label for="email" class="required-field">電子郵件：</label>
                             <input type="email" id="email" name="email" required>
                         </div>
                         <div class="form-group">
-                            <label for="subject">主旨：</label>
+                            <label for="subject" class="required-field">主旨：</label>
                             <input type="text" id="subject" name="subject" required>
                         </div>
                         <div class="form-group">
-                            <label for="message">留言：</label>
+                            <label for="message" class="required-field">留言：</label>
                             <textarea id="message" name="message" rows="4" required></textarea>
                         </div>
                         <button type="submit" class="submit-btn">送出留言</button>
@@ -105,26 +106,38 @@
                 {% if services %}
                     {% for service in services %}
                         <div class="service-item">
-                            {% if loop.index == 1 %}
-                                <i class="fas fa-robot"></i>
-                            {% elif loop.index == 2 %}
-                                <i class="fas fa-wrench"></i>
-                            {% elif loop.index == 3 %}
-                                <i class="fas fa-utensils"></i>
-                            {% elif loop.index == 4 %}
-                                <i class="fas fa-hands-helping"></i>
-                            {% else %}
-                                <i class="fas fa-check-circle"></i>
-                            {% endif %}
-                            <p>{{ service.title }}</p>
+                            <div class="service-item-header">
+                                {% if loop.index == 1 %}
+                                    <i class="fas fa-robot"></i>
+                                {% elif loop.index == 2 %}
+                                    <i class="fas fa-wrench"></i>
+                                {% elif loop.index == 3 %}
+                                    <i class="fas fa-utensils"></i>
+                                {% elif loop.index == 4 %}
+                                    <i class="fas fa-hands-helping"></i>
+                                {% else %}
+                                    <i class="fas fa-check-circle"></i>
+                                {% endif %}
+                                <p class="service-item-title">{{ service.title }}</p>
+                            </div>
                             {% if service.description %}
-                                <small class="service-description">{{ service.description|safe }}</small>
+                                <div class="service-description">{{ service.description|safe }}</div>
                             {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
                     <p class="no-services">目前沒有服務項目。</p>
                 {% endif %}
+                
+                <div class="team-photo-container">
+                    <img src="{{ url_for('static', filename='images/tunghai_team.jpg') }}" alt="東海大一中文團隊" class="team-photo">
+                    <p class="team-photo-caption">
+                        講師所屬的東海大一中文團隊（中央為系主任、右手邊為專任教師），接受天下雜誌專訪。
+                    </p>
+                    <p class="team-photo-credit">
+                        （圖片引用自天下雜誌教育特刊記者林綺薇專訪）
+                    </p>
+                </div>
             </section>
             
             <section class="news">
