@@ -2,10 +2,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 如果頁面中有Rich Text Editor需要初始化
     if (document.getElementById('content') || document.getElementById('description')) {
-        // 使用CDN載入TinyMCE
+        // 使用本地託管的TinyMCE
         if (!window.tinymce) {
             var script = document.createElement('script');
-            script.src = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js';
+            script.src = '/static/tinymce/tinymce/js/tinymce/tinymce.min.js';
             script.referrerpolicy = 'origin';
             document.head.appendChild(script);
             
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
-            language: 'zh_TW', // 使用繁體中文
+            // 移除語言設定，使用默認英文
             setup: function(editor) {
                 editor.on('change', function() {
                     editor.save(); // 保存編輯器內容到原始textarea
