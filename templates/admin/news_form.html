@@ -1,0 +1,43 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}{% if is_new %}添加新消息{% else %}編輯消息{% endif %} - 後台管理{% endblock %}
+
+{% block header_title %}{% if is_new %}添加新消息{% else %}編輯消息{% endif %}{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_news') }}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> 返回最新消息列表
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST" action="{% if is_new %}{{ url_for('admin_news_new') }}{% else %}{{ url_for('admin_news_edit', news_id=news.id) }}{% endif %}" class="admin-form news-form">
+        <div class="form-group">
+            <label for="title">標題 <span class="required">*</span></label>
+            <input type="text" id="title" name="title" required value="{{ news.title if news else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="content">內容 <span class="required">*</span></label>
+            <textarea id="content" name="content" rows="8" required>{{ news.content if news else '' }}</textarea>
+        </div>
+
+        <div class="form-group form-checkbox">
+            <input type="checkbox" id="is_featured" name="is_featured" {% if news and news.is_featured %}checked{% endif %}>
+            <label for="is_featured">設為精選消息（顯示在最前面並強調）</label>
+        </div>
+
+        <div class="form-group form-checkbox">
+            <input type="checkbox" id="active" name="active" {% if not news or news.active %}checked{% endif %}>
+            <label for="active">啟用（顯示在網站上）</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary-btn">
+                <i class="fas fa-save"></i> {% if is_new %}添加消息{% else %}保存更改{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

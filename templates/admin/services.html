@@ -1,0 +1,63 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}服務項目管理 - 後台管理{% endblock %}
+
+{% block header_title %}服務項目管理{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_service_new') }}" class="btn primary-btn">
+    <i class="fas fa-plus"></i> 添加新服務
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="services-container">
+    {% if services %}
+        <table class="data-table services-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>服務名稱</th>
+                    <th>描述</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr>
+                    <td>{{ service.id }}</td>
+                    <td>{{ service.title }}</td>
+                    <td class="service-description">
+                        {% if service.description %}
+                            {{ service.description }}
+                        {% else %}
+                            <span class="no-data">無描述</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if service.active %}
+                            <span class="status status-active">顯示中</span>
+                        {% else %}
+                            <span class="status status-inactive">已隱藏</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions-cell">
+                        <a href="{{ url_for('admin_service_edit', service_id=service.id) }}" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i> 編輯
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_service_delete', service_id=service.id) }}" class="delete-form" onsubmit="return confirm('確定要刪除這個服務項目嗎？此操作無法撤銷。');">
+                            <button type="submit" class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i> 刪除
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-data">目前沒有服務項目</p>
+    {% endif %}
+</div>
+{% endblock %}

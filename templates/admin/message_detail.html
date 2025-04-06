@@ -1,0 +1,36 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}留言詳情 - 後台管理{% endblock %}
+
+{% block header_title %}留言詳情{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_messages') }}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> 返回留言列表
+</a>
+<a href="mailto:{{ message.email }}" class="btn primary-btn">
+    <i class="fas fa-envelope"></i> 發送郵件給 {{ message.name }}
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="message-detail">
+    <div class="message-info">
+        <div class="message-header">
+            <h2>{{ message.subject }}</h2>
+            <div class="message-meta">
+                <p><strong>留言者：</strong>{{ message.name }}</p>
+                <p><strong>電子郵件：</strong><a href="mailto:{{ message.email }}">{{ message.email }}</a></p>
+                <p><strong>時間：</strong>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+        </div>
+        
+        <div class="message-content">
+            <h3>留言內容</h3>
+            <div class="message-text">
+                {{ message.message|replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

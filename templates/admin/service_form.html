@@ -1,0 +1,56 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}
+    {% if is_new %}
+        添加服務項目 - 後台管理
+    {% else %}
+        編輯服務項目 - 後台管理
+    {% endif %}
+{% endblock %}
+
+{% block header_title %}
+    {% if is_new %}
+        添加新服務項目
+    {% else %}
+        編輯服務項目
+    {% endif %}
+{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_services') }}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> 返回服務項目列表
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST" class="standard-form service-form">
+        <div class="form-group">
+            <label for="title">服務名稱 <span class="required">*</span></label>
+            <input type="text" id="title" name="title" value="{{ service.title if service else '' }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">服務描述</label>
+            <textarea id="description" name="description" rows="5">{{ service.description if service and service.description else '' }}</textarea>
+        </div>
+        
+        <div class="form-group form-checkbox">
+            <input type="checkbox" id="active" name="active" {% if service is none or service.active %}checked{% endif %}>
+            <label for="active">顯示此服務</label>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn primary-btn">
+                <i class="fas fa-save"></i> 
+                {% if is_new %}
+                    添加服務
+                {% else %}
+                    更新服務
+                {% endif %}
+            </button>
+            <a href="{{ url_for('admin_services') }}" class="btn">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}最新消息管理 - 後台管理{% endblock %}
+
+{% block header_title %}最新消息管理{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_news_new') }}" class="btn primary-btn">
+    <i class="fas fa-plus"></i> 添加新消息
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="news-management">
+    <div class="news-list">
+        {% if news_posts %}
+            <table class="data-table news-table">
+                <thead>
+                    <tr>
+                        <th>標題</th>
+                        <th>發布日期</th>
+                        <th>精選</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for news in news_posts %}
+                    <tr>
+                        <td class="news-title">{{ news.title }}</td>
+                        <td>{{ news.publish_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td class="text-center">
+                            {% if news.is_featured %}
+                            <span class="status status-featured"><i class="fas fa-star"></i> 精選</span>
+                            {% else %}
+                            <span class="status status-normal">一般</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if news.active %}
+                            <span class="status status-active">顯示中</span>
+                            {% else %}
+                            <span class="status status-inactive">隱藏</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('admin_news_edit', news_id=news.id) }}" class="action-btn edit-btn">
+                                    <i class="fas fa-edit"></i> 編輯
+                                </a>
+                                <form method="POST" action="{{ url_for('admin_news_delete', news_id=news.id) }}" class="inline-form delete-form">
+                                    <button type="submit" class="action-btn delete-btn" onclick="return confirm('確定要刪除此消息嗎？此操作無法撤銷。');">
+                                        <i class="fas fa-trash-alt"></i> 刪除
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">目前沒有最新消息</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

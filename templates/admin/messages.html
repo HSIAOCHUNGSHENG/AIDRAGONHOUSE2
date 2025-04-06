@@ -1,0 +1,90 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}留言管理 - 後台管理{% endblock %}
+
+{% block header_title %}留言管理{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <div class="filters">
+        <div class="search-group">
+            <input type="text" id="search-input" placeholder="搜尋留言者或主旨...">
+            <button id="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="messages-list">
+        {% if messages %}
+            <table class="data-table messages-table">
+                <thead>
+                    <tr>
+                        <th>留言者</th>
+                        <th>電子郵件</th>
+                        <th>主旨</th>
+                        <th>收到時間</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                    <tr>
+                        <td>{{ message.name }}</td>
+                        <td>{{ message.email }}</td>
+                        <td class="message-subject">{{ message.subject }}</td>
+                        <td>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_message_detail', message_id=message.id) }}" class="action-btn view-btn">
+                                <i class="fas fa-eye"></i> 查看
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">目前沒有留言</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const rows = document.querySelectorAll('.messages-table tbody tr');
+    
+    function filterMessages() {
+        const searchText = searchInput.value.toLowerCase();
+        
+        rows.forEach(row => {
+            const name = row.querySelector('td:first-child').textContent.toLowerCase();
+            const email = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const subject = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            
+            const matchesSearch = searchText === '' || 
+                               name.includes(searchText) || 
+                               email.includes(searchText) || 
+                               subject.includes(searchText);
+            
+            if (matchesSearch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    searchBtn.addEventListener('click', filterMessages);
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            filterMessages();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI臥龍崗 - 蕭崇聖的個人網站</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AI臥龍崗</h1>
+    </header>
+    
+    <!-- 閃現消息顯示 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button class="close-flash">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="container">
+        <div class="temple-background" style="background-image: url({{ url_for('static', filename='images/temple_background.jpeg') }})"> 
+            <section class="profile"> 
+                <div class="profile-image"> 
+                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="蕭崇聖的照片"> 
+                </div> 
+                <h2 class="profile-name">蕭崇聖 講師</h2> 
+            </section> 
+        </div>
+        
+        <div class="content">
+            <section class="contact-info">
+                <h2>聯絡資訊</h2>
+                
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:ommanibamehumpractice@gmail.com">ommanibamehumpractice@gmail.com</a>
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fab fa-line"></i>
+                    <span>LINE ID: rainbowhunter</span>
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fas fa-qrcode"></i>
+                    <span>LINE QR Code:</span>
+                </div>
+                
+                <div class="qr-code">
+                    <img src="{{ url_for('static', filename='images/line_qrcode.jpg') }}" alt="LINE QR Code">
+                </div>
+                
+                <!-- 聯絡表單 -->
+                <div class="contact-form-container">
+                    <h3>聯絡我們</h3>
+                    <form class="contact-form" action="{{ url_for('contact') }}" method="POST">
+                        <div class="form-group">
+                            <label for="name">姓名：</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">電子郵件：</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">主旨：</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">留言：</label>
+                            <textarea id="message" name="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">送出留言</button>
+                    </form>
+                </div>
+            </section>
+            
+            <section class="services">
+                <h2>服務項目</h2>
+                
+                {% if services %}
+                    {% for service in services %}
+                        <div class="service-item">
+                            {% if loop.index == 1 %}
+                                <i class="fas fa-robot"></i>
+                            {% elif loop.index == 2 %}
+                                <i class="fas fa-wrench"></i>
+                            {% elif loop.index == 3 %}
+                                <i class="fas fa-utensils"></i>
+                            {% elif loop.index == 4 %}
+                                <i class="fas fa-hands-helping"></i>
+                            {% else %}
+                                <i class="fas fa-check-circle"></i>
+                            {% endif %}
+                            <p>{{ service.title }}</p>
+                            {% if service.description %}
+                                <small class="service-description">{{ service.description }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-services">目前沒有服務項目。</p>
+                {% endif %}
+            </section>
+            
+            <section class="news">
+                <h2>最新消息與貼文</h2>
+                
+                <div class="news-container" style="background-image: url({{ url_for('static', filename='images/news_background.jpeg') }})">
+                    {% if news_posts %}
+                        {% for news in news_posts %}
+                            <div class="news-item {% if news.is_featured %}featured{% endif %}">
+                                <h3 class="news-title">{{ news.title }}</h3>
+                                <div class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</div>
+                                <div class="news-content">{{ news.content }}</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-news">目前沒有最新消息。</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 AI臥龍崗 - 蕭崇聖的個人網站 | <a href="{{ url_for('admin_login') }}" class="admin-link">後台管理</a></p>
+    </footer>
+    
+    <a href="mailto:ommanibamehumpractice@gmail.com" class="email-button" title="寄送郵件">
+        <i class="fas fa-envelope"></i>
+    </a>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
