@@ -16,6 +16,10 @@
     <!-- Admin CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
     
+    <!-- favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -107,6 +111,8 @@
         });
     </script>
     
+    <!-- Custom scripts -->
+    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

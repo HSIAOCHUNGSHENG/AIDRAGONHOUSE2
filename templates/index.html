@@ -16,6 +16,11 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-fixes.css') }}">
+    
+    <!-- favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <header>
@@ -113,7 +118,7 @@
                             {% endif %}
                             <p>{{ service.title }}</p>
                             {% if service.description %}
-                                <small class="service-description">{{ service.description }}</small>
+                                <small class="service-description">{{ service.description|safe }}</small>
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -131,7 +136,7 @@
                             <div class="news-item {% if news.is_featured %}featured{% endif %}">
                                 <h3 class="news-title">{{ news.title }}</h3>
                                 <div class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</div>
-                                <div class="news-content">{{ news.content }}</div>
+                                <div class="news-content">{{ news.content|safe }}</div>
                             </div>
                         {% endfor %}
                     {% else %}

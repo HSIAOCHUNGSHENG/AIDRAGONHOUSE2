@@ -144,7 +144,10 @@ header h1 {
     font-weight: 500;
     line-height: 1.4;
     word-wrap: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
     hyphens: auto;
+    max-width: 100%;
 }
 
 .service-description {

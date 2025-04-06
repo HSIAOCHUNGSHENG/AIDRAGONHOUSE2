@@ -1,0 +1,71 @@
+/* 針對電腦版的問題修復 */
+
+/* 服務項目標題與描述在電腦版的優化 */
+@media (min-width: 769px) {
+    /* 確保服務項目在大屏幕上有適當的文字換行 */
+    .service-item p {
+        word-break: normal;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+    }
+    
+    /* 確保服務描述段落正確顯示 */
+    .service-description {
+        font-size: 14px;
+        margin-top: 8px;
+        line-height: 1.5;
+        display: block;
+        color: #555;
+    }
+    
+    /* 內容區域調整 */
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: space-between;
+    }
+    
+    /* 確保服務項目卡片佔據適當空間 */
+    .contact-info, .services {
+        flex: 1;
+        min-width: 300px;
+        max-width: calc(50% - 15px);
+    }
+    
+    /* 新聞區域在大屏幕上佔據整行 */
+    .news {
+        flex: 100%;
+        width: 100%;
+    }
+}
+
+/* 確保內容正常顯示，避免中文字體縮放問題 */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* 修復長標題顯示問題 */
+.service-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    background-color: #fff9f0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* 防止內容溢出 */
+}
+
+.service-item i {
+    flex-shrink: 0; /* 防止圖標縮小 */
+}
+
+.service-item p {
+    word-break: break-word; /* 允許在任何字符處換行 */
+    overflow-wrap: break-word;
+    width: 100%;
+}

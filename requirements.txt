@@ -8,3 +8,7 @@ psycopg2-binary==2.9.9
 SendGrid==6.10.0
 SQLAlchemy==2.0.29
 Werkzeug==3.0.1
+cairosvg
+pillow
+reportlab
+svglib

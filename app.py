@@ -57,9 +57,9 @@ def init_db():
     if Admin.query.count() == 0:
         default_admin = Admin(
             username='admin', 
-            email='ommanibamehumpractice@gmail.com'
+            email='fet0989147988@gmail.com'
         )
-        default_admin.set_password('admin123')  # 設置初始密碼
+        default_admin.set_password('m1234857')  # 設置初始密碼
         db.session.add(default_admin)
         db.session.commit()
         print("初始管理員已添加到數據庫")
