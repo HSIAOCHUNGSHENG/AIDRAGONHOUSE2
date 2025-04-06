@@ -1,0 +1,57 @@
+/* 包浩斯風格字體設定 */
+body {
+    font-family: 'Work Sans', 'Noto Sans TC', sans-serif;
+}
+
+h1, h2, h3, .profile-name {
+    font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+header h1 {
+    font-weight: 600;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+}
+
+.profile-name {
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+section h2 {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.service-item-title {
+    font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.news-title {
+    font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.contact-form-container h3 {
+    font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.submit-btn {
+    font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+footer {
+    font-family: 'Work Sans', 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+}
