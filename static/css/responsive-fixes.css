@@ -1,0 +1,59 @@
+/* 為長服務標題進行優化的移動端樣式 */
+@media (max-width: 768px) {
+    /* 在移動設備上改變服務項目的布局 */
+    .service-item {
+        flex-direction: column !important;
+        padding: 15px 10px !important;
+    }
+    
+    /* 在移動設備上調整圖標的樣式 */
+    .service-item i {
+        margin-bottom: 10px !important;
+        margin-right: 0 !important;
+        font-size: 28px !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* 在移動設備上調整文本樣式 */
+    .service-item p {
+        text-align: center !important;
+        font-size: 15px !important;  /* 稍微減小字體大小 */
+        word-break: break-word !important;  /* 確保長詞可以換行 */
+        width: 100% !important;
+    }
+    
+    /* 在移動設備上調整描述文本的樣式 */
+    .service-description {
+        text-align: center !important;
+        margin-top: 8px !important;
+        font-size: 13px !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    /* 調整移動端的內容顯示順序 - 由上到下: 大頭照與名字、服務項目、最新消息、聯絡資訊 */
+    
+    /* 服務項目顯示在第二位置 */
+    .services {
+        order: 1 !important;
+    }
+    
+    /* 最新消息顯示在第三位置 */
+    .news {
+        order: 2 !important;
+        margin-top: 20px !important;
+    }
+    
+    /* 聯絡資訊顯示在最後 */
+    .contact-info {
+        order: 3 !important;
+        margin-top: 20px !important;
+    }
+    
+    /* 確保內容區塊使用flex布局以支持order屬性 */
+    .content {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}
