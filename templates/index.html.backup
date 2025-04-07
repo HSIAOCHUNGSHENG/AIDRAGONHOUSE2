@@ -90,11 +90,11 @@
     </style>
 </head>
 <body>
+    <header>
+        <h1>Jonathan H. 的AI臥龍崗</h1>
+    </header>
     
     <!-- 閃現消息顯示 -->
-    <header>
-        <h1><span class="author-name">Jonathan H. 的</span><br class="mobile-only"><span class="site-title">AI臥龍崗</span></h1>
-    </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="flash-messages">
@@ -180,58 +180,6 @@
                     
                     <button type="submit" class="send-btn">發送訊息</button>
                 </form>
-            </section>
-            
-            <section class="services">
-                <h2>服務項目</h2>
-                <ul class="service-list">
-                    {% for service in services %}
-                    <li class="service-item">
-                        <div class="service-item-header">
-                            <i class="fas fa-check-circle"></i>
-                            <div class="service-item-title">{{ service.title }}</div>
-                        </div>
-                        {% if service.description %}
-                        <div class="service-description">{{ service.description|safe }}</div>
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-                </ul>
-                
-                <!-- 團隊照片 -->
-                <div class="team-photo-section">
-                    <img src="{{ url_for('static', filename='images/tunghai_team.jpg') }}" alt="東海大一中文團隊" class="team-photo">
-                    <p class="team-caption">講師所屬的東海大一中文團隊（中央為系主任、右手邊為專任教師），接受天下雜誌專訪。<br><span class="photo-credit">攝影：天下雜誌教育特刊記者林綺薇</span></p>
-                </div>
-            </section>
-            
-            <!-- 新的最新消息部分（獨立於兩欄布局之外） -->
-            <section class="news-section" style="background-image: url({{ url_for('static', filename='images/cyberpunk_fireplace_background.jpeg') }}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 50px; border-radius: 10px; margin-top: 30px; margin-bottom: 20px;">
-                <h2 class="news-section-title">最新消息</h2>
-                
-                <div class="news-container" style="max-width: 700px; margin: 0 auto;">
-                    {% for news in news_posts %}
-                    <div class="news-item {% if news.is_featured %}featured{% endif %}">
-                        <h3 class="news-title">
-                            <a href="{{ url_for('news_detail', news_id=news.id) }}">{{ news.title }}</a>
-                        </h3>
-                        <div class="news-meta">
-                            <span class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</span>
-                            {% if news.is_featured %}
-                            <span class="featured-label">精選</span>
-                            {% endif %}
-                        </div>
-                        <div class="news-content">
-                            {% set short_content = news.content|truncate(150, true) %}
-                            {{ short_content|safe }}
-                        </div>
-                        <div class="read-more">
-                            <a href="{{ url_for('news_detail', news_id=news.id) }}" class="read-more-link">閱讀全文 <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </section>
         </div>
     </div>
     
