@@ -1,0 +1,35 @@
+            <section class="contact-info">
+                <h2>聯絡資訊</h2>
+                <div class="profile-text">
+                    {{ profile.content|nl2br }}
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:{{ contact_info.email }}">{{ contact_info.email }}</a>
+                </div>
+                
+                {% if contact_info.line_id %}
+                <div class="contact-item">
+                    <i class="fab fa-line"></i>
+                    <span>LINE ID: {{ contact_info.line_id }}</span>
+                </div>
+                {% endif %}
+                
+                {% if contact_info.qr_code_path %}
+                <div class="contact-item">
+                    <i class="fas fa-qrcode"></i>
+                    <span>LINE QR Code:</span>
+                </div>
+                
+                <div class="qr-code">
+                    <img src="{{ url_for('static', filename=contact_info.qr_code_path) }}" alt="LINE QR Code">
+                </div>
+                {% endif %}
+                
+                {% if contact_info.additional_info %}
+                <div class="contact-item additional-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>{{ contact_info.additional_info }}</span>
+                </div>
+                {% endif %}

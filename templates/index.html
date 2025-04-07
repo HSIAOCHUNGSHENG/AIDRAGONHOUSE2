@@ -60,6 +60,33 @@
             color: #c26a39;
             text-decoration: underline;
         }
+        
+        /* 最新消息部分放在服務項目下方 */
+        .news-section {
+            grid-column: 1 / -1; /* 讓最新消息跨越整個寬度 */
+            margin-top: 20px;
+            clear: both;
+        }
+        
+        /* 移動設備顯示順序 */
+        @media (max-width: 900px) {
+            .content {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .contact-info {
+                order: 1;
+            }
+            
+            .services {
+                order: 2;
+            }
+            
+            .news-section {
+                order: 3;
+            }
+        }
     </style>
 </head>
 <body>
@@ -100,126 +127,145 @@
                 
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <a href="mailto:ommanibamehumpractice@gmail.com">ommanibamehumpractice@gmail.com</a>
+                    <a href="mailto:{{ contact_info.email }}">{{ contact_info.email }}</a>
                 </div>
                 
+                {% if contact_info.line_id %}
                 <div class="contact-item">
                     <i class="fab fa-line"></i>
-                    <span>LINE ID: rainbowhunter</span>
+                    <span>LINE ID: {{ contact_info.line_id }}</span>
                 </div>
+                {% endif %}
                 
+                {% if contact_info.qr_code_path %}
                 <div class="contact-item">
                     <i class="fas fa-qrcode"></i>
                     <span>LINE QR Code:</span>
                 </div>
                 
                 <div class="qr-code">
-                    <img src="{{ url_for('static', filename='images/line_qrcode.jpg') }}" alt="LINE QR Code">
+                    <img src="{{ url_for('static', filename=contact_info.qr_code_path) }}" alt="LINE QR Code">
                 </div>
+                {% endif %}
                 
-                <!-- 聯絡表單 -->
-                <div class="contact-form-container">
-                    <h3>聯絡我們</h3>
-                    <form class="contact-form" action="{{ url_for('contact') }}" method="POST">
-                        <div class="form-group">
-                            <label for="name" class="required-field">姓名：</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email" class="required-field">電子郵件：</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject" class="required-field">主旨：</label>
-                            <input type="text" id="subject" name="subject" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="message" class="required-field">留言：</label>
-                            <textarea id="message" name="message" rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">送出留言</button>
-                    </form>
+                {% if contact_info.additional_info %}
+                <div class="contact-item additional-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>{{ contact_info.additional_info }}</span>
                 </div>
+                {% endif %}
+                
+                <!-- 聯繫表單 -->
+                <h3>聯絡我</h3>
+                <form class="contact-form" action="{{ url_for('contact') }}" method="post">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">電子郵件</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">主題</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">訊息</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="send-btn">發送訊息</button>
+                </form>
             </section>
             
             <section class="services">
                 <h2>服務項目</h2>
-                
-                {% if services %}
+                <ul class="service-list">
                     {% for service in services %}
-                        <div class="service-item">
-                            <div class="service-item-header">
-                                {% if loop.index == 1 %}
-                                    <i class="fas fa-robot"></i>
-                                {% elif loop.index == 2 %}
-                                    <i class="fas fa-wrench"></i>
-                                {% elif loop.index == 3 %}
-                                    <i class="fas fa-utensils"></i>
-                                {% elif loop.index == 4 %}
-                                    <i class="fas fa-hands-helping"></i>
-                                {% else %}
-                                    <i class="fas fa-check-circle"></i>
-                                {% endif %}
-                                <p class="service-item-title">{{ service.title }}</p>
-                            </div>
-                            {% if service.description %}
-                                <div class="service-description">{{ service.description|safe }}</div>
-                            {% endif %}
+                    <li class="service-item">
+                        <div class="service-item-header">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="service-item-title">{{ service.title }}</div>
                         </div>
+                        {% if service.description %}
+                        <div class="service-description">{{ service.description }}</div>
+                        {% endif %}
+                    </li>
                     {% endfor %}
-                {% else %}
-                    <p class="no-services">目前沒有服務項目。</p>
-                {% endif %}
+                </ul>
                 
-                <div class="team-photo-container">
+                <!-- 團隊照片 -->
+                <div class="team-photo-section">
                     <img src="{{ url_for('static', filename='images/tunghai_team.jpg') }}" alt="東海大一中文團隊" class="team-photo">
-                    <p class="team-photo-caption">
-                        講師所屬的東海大一中文團隊（中央為系主任、右手邊為專任教師），接受天下雜誌專訪。
-                    </p>
-                    <p class="team-photo-credit">
-                        （圖片引用自天下雜誌教育特刊記者林綺薇專訪）
-                    </p>
+                    <p class="team-caption">講師所屬的東海大一中文團隊（中央為系主任、右手邊為專任教師），接受天下雜誌專訪。<br><span class="photo-credit">攝影：天下雜誌教育特刊記者林綺薇</span></p>
                 </div>
             </section>
             
-            <section class="news">
-                <h2>最新消息與貼文</h2>
+            <!-- 新的最新消息部分（獨立於兩欄布局之外） -->
+            <section class="news-section" style="background-image: url({{ url_for('static', filename='images/fireplace_background.jpeg') }}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 30px; border-radius: 10px; margin-top: 30px; margin-bottom: 20px;">
+                <h2 class="news-section-title">最新消息</h2>
                 
-                <div class="news-container" style="background-image: url({{ url_for('static', filename='images/news_background.jpeg') }})">
-                    {% if news_posts %}
-                        {% for news in news_posts %}
-                            <div class="news-item {% if news.is_featured %}featured{% endif %}">
-                                <h3 class="news-title">
-                                    <a href="{{ url_for('news_detail', news_id=news.id) }}">{{ news.title }}</a>
-                                </h3>
-                                <div class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</div>
-                                <div class="news-content">
-                                    {{ (news.content|striptags)[:200] + '...' if news.content|striptags|length > 200 else news.content|striptags }}
-                                </div>
-                                <div class="read-more">
-                                    <a href="{{ url_for('news_detail', news_id=news.id) }}" class="read-more-link">
-                                        繼續閱讀 <i class="fas fa-angle-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="no-news">目前沒有最新消息。</p>
-                    {% endif %}
+                <div class="news-container">
+                    {% for news in news_posts %}
+                    <div class="news-item {% if news.is_featured %}featured{% endif %}">
+                        <h3 class="news-title">
+                            <a href="{{ url_for('news_detail', news_id=news.id) }}">{{ news.title }}</a>
+                        </h3>
+                        <div class="news-meta">
+                            <span class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</span>
+                            {% if news.is_featured %}
+                            <span class="featured-label">精選</span>
+                            {% endif %}
+                        </div>
+                        <div class="news-content">
+                            {% set short_content = news.content|truncate(150, true) %}
+                            {{ short_content|safe }}
+                        </div>
+                        <div class="read-more">
+                            <a href="{{ url_for('news_detail', news_id=news.id) }}" class="read-more-link">閱讀全文 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </section>
         </div>
     </div>
     
     <footer>
-        <p>&copy; {{ now.year }} AI臥龍崗 - 蕭崇聖的個人網站 | <a href="{{ url_for('admin_login') }}" class="admin-link">後台管理</a></p>
+        <p>&copy; {{ now.year }} Jonathan H. 的AI臥龍崗 - 保留所有權利</p>
+        {% if current_user.is_authenticated %}
+        <p><a href="{{ url_for('admin_dashboard') }}">管理後台</a> | <a href="{{ url_for('admin_logout') }}">登出</a></p>
+        {% else %}
+        <p><a href="{{ url_for('admin_login') }}">管理員登入</a></p>
+        {% endif %}
     </footer>
     
-    <a href="mailto:ommanibamehumpractice@gmail.com" class="email-button" title="寄送郵件">
-        <i class="fas fa-envelope"></i>
-    </a>
+    <div class="fixed-mail">
+        <a href="mailto:{{ contact_info.email }}"><i class="fas fa-envelope"></i></a>
+    </div>
     
-    <!-- Custom JavaScript -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // 關閉 Flash 消息
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.close-flash');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.parentElement.style.display = 'none';
+                });
+            });
+            
+            // 5秒後自動隱藏 flash 消息
+            setTimeout(function() {
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(message => {
+                    message.style.display = 'none';
+                });
+            }, 5000);
+        });
+    </script>
 </body>
 </html>
