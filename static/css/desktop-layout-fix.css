@@ -1,0 +1,36 @@
+/* 改進桌面版布局 */
+@media (min-width: 769px) {
+    /* 調整服務項目與聯絡資訊在桌面版的寬度，保持等寬佔滿版面 */
+    .content {
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 20px;
+    }
+    
+    /* 確保兩側欄位佔據相同寬度 */
+    .services, .contact-info {
+        width: 100%;
+        max-width: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+    }
+    
+    .service-item {
+        margin-bottom: 30px;
+        width: 100%;
+    }
+    
+    .service-description {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    /* 修復整體容器 */
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+    }
+}

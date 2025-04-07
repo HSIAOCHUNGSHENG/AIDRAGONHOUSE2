@@ -89,3 +89,28 @@
         padding: 10px;
     }
 }
+
+/* 調整整體容器佈局 */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* 確保內容區域佔滿容器寬度 */
+.content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* 確保左右兩側欄位等寬 */
+@media (min-width: 769px) {
+    .contact-info, .services {
+        width: 100%;
+        flex: 1;
+        box-sizing: border-box;
+    }
+}
