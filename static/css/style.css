@@ -1,4 +1,19 @@
 /* 全局變量 */
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.mobile-only {
+    display: none;
+}
+
+/* 手機版標題樣式 */
+@media (max-width: 768px) {
+    .mobile-only {
+        display: inline;
+    }
+}
 :root {
     --primary-color: #D97742; /* 燒橙色 */
     --secondary-color: #F4C563; /* 金黃色 */
@@ -36,9 +51,16 @@ header {
     z-index: 100;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 1.8rem;
+
+.mobile-only {
+    display: none;
+}
+
+/* 手機版標題樣式 */
+@media (max-width: 768px) {
+    .mobile-only {
+        display: inline;
+    }
 }
 
 .container {
@@ -511,4 +533,15 @@ footer a:hover {
     text-align: center;
     font-size: 28px;
     letter-spacing: 2px;
+}
+
+/* 手機版標題樣式 */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: inline;
+    }
 }
