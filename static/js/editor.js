@@ -24,7 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
             menubar: false,
             plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+            content_style: "body { font-family:Helvetica,Arial,sans-serif; font-size:16px; max-width:100%; overflow-wrap:break-word; }",
+            width: "100%",
+            force_root_block: "p",
+            force_br_newlines: false,
+            forced_root_block: "p",
             // 移除語言設定，使用默認英文
             setup: function(editor) {
                 editor.on('change', function() {
