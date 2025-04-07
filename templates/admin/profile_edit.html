@@ -11,6 +11,7 @@
         <div class="form-group">
             <label for="content">個人小檔案內容：</label>
             <textarea id="content" name="content" rows="10" class="form-control" required>{{ profile.content }}</textarea>
+            <p class="form-text text-muted">使用上方的編輯器工具欄來豐富您的個人小檔案內容。您可以新增格式化文字、清單、圖片和其他多媒體內容。</p>
         </div>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">保存更改</button>
@@ -18,4 +19,21 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 編輯器已加載事件監聽器
+    if (typeof tinymce !== 'undefined') {
+        // 如果能立即獲取到 tinymce，則直接添加語言設定
+        const originalEditors = document.querySelectorAll('.tox-tinymce');
+        if (originalEditors.length > 0) {
+            console.log('TinyMCE 編輯器已載入');
+        } else {
+            console.log('等待 TinyMCE 編輯器載入...');
+        }
+    }
+});
+</script>
 {% endblock %}
