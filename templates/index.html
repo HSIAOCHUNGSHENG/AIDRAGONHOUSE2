@@ -153,7 +153,7 @@
                 {% if contact_info.additional_info %}
                 <div class="contact-item additional-info">
                     <i class="fas fa-info-circle"></i>
-                    <span>{{ contact_info.additional_info }}</span>
+                    <div class="additional-info-content">{{ contact_info.additional_info|safe }}</div>
                 </div>
                 {% endif %}
                 
