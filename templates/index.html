@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bauhaus-fonts.css') }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/mobile-fixes.css") }}">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/text-alignment-fix.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/tinymce-content-fixes.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/container-overflow-fix.css") }}">
     
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
@@ -124,7 +126,9 @@
             <section class="contact-info">
                 <h2>聯絡資訊</h2>
                 <div class="profile-text">
+                    <div class="profile-text-container">
                     {{ profile.content|safe }}
+                    </div>
                 </div>
                 
                 <div class="contact-item">
