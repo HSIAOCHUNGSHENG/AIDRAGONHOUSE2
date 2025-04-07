@@ -1,10 +1,14 @@
 import os
 from datetime import datetime
 
+from markupsafe import Markup
 from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+
+def nl2br(value):
+    return Markup(value.replace('\n', '<br>'))
 
 
 class Base(DeclarativeBase):
@@ -14,6 +18,8 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 # create the app
 app = Flask(__name__)
+# 註冊 nl2br 過濾器
+app.jinja_env.filters['nl2br'] = nl2br
 # setup a secret key, required by sessions
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
 # configure the database, relative to the app instance folder
@@ -46,13 +52,19 @@ def load_user(user_id):
     from models import Admin
     return Admin.query.get(int(user_id))
 
+@app.context_processor
+def inject_now():
+    """將當前日期時間添加到所有模板的上下文中"""
+    from datetime import datetime
+    return {'now': datetime.now()}
+
 def init_db():
     """初始化資料庫並創建示例數據"""
-    from models import Service, Admin, News
-    
+    from models import Service, Admin, News, Profile
+
     # 創建表格
     db.create_all()
-    
+
     # 檢查是否已有管理員帳號，如果沒有則創建默認管理員
     if Admin.query.count() == 0:
         default_admin = Admin(
@@ -63,7 +75,7 @@ def init_db():
         db.session.add(default_admin)
         db.session.commit()
         print("初始管理員已添加到數據庫")
-    
+
     # 檢查是否已有服務項目，如果沒有則創建默認服務
     if Service.query.count() == 0:
         default_services = [
@@ -72,13 +84,13 @@ def init_db():
             Service(title="借醬油", description="生活互助，隨時提供您所需的醬油", active=True),
             Service(title="臨終助唸", description="提供佛教臨終關懷與助唸服務", active=True)
         ]
-        
+
         for service in default_services:
             db.session.add(service)
-        
+
         db.session.commit()
         print("初始服務已添加到數據庫")
-    
+
     # 檢查是否已有最新消息，如果沒有則創建默認消息
     if News.query.count() == 0:
         default_news = [
@@ -101,27 +113,44 @@ def init_db():
                 active=True
             )
         ]
-        
+
         for news in default_news:
             db.session.add(news)
-        
+
         db.session.commit()
         print("初始最新消息已添加到數據庫")
+
+    #建立預設個人檔案
+    if Profile.query.count() == 0:
+        default_profile = Profile(content="講師「Jonathan H. 」個人小檔案：\n覺得英文稱謂很傲口也可以叫我「蕭蕭」。\n雙魚座B型、\n銀櫃KTV VIP會員、\nMcDonald's點點卡持有人、\n東海中文系博士生、\n東海中文系兼任講師、\n教育部素養導向高教學習創新計畫（XPlorer探索者計畫）AI專班共同課程講師、\n東海大學AI學習體驗設計專班、核心工作坊教師。")
+        db.session.add(default_profile)
+        db.session.commit()
+        print("初始個人檔案已添加到數據庫")
+
 
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
     import models  # noqa: F401
-    
+
     # 初始化資料庫
     init_db()
 
 @app.route('/')
 def index():
     # 從數據庫獲取活躍服務和最新消息
-    from models import Service, News
+    from models import Service, News, Profile
+    
     services = Service.query.filter_by(active=True).all()
-    news_posts = News.query.filter_by(active=True).order_by(News.publish_date.desc()).limit(3).all()
-    return render_template('index.html', services=services, news_posts=news_posts)
+    
+    # 先按是否精選、再按發布日期降序排序
+    news_posts = News.query.filter_by(active=True).order_by(
+        News.is_featured.desc(),  # 精選的排在前面
+        News.publish_date.desc()  # 然後按日期降序
+    ).limit(3).all()
+    
+    profile = Profile.query.first()
+    
+    return render_template('index.html', services=services, news_posts=news_posts, profile=profile)
 
 @app.route('/googleacb1ce472a34877b.html')
 def google_verification():
@@ -136,11 +165,11 @@ def contact():
         email = request.form.get('email')
         subject = request.form.get('subject')
         message_text = request.form.get('message')
-        
+
         if not name or not email or not subject or not message_text:
             flash('請填寫所有必填欄位', 'error')
             return redirect(url_for('index'))
-        
+
         try:
             from models import Message
             new_message = Message(
@@ -155,7 +184,7 @@ def contact():
         except Exception as e:
             db.session.rollback()
             flash(f'發生錯誤，請稍後再試。錯誤訊息：{str(e)}', 'error')
-        
+
         return redirect(url_for('index'))
 
 
@@ -166,14 +195,14 @@ def admin_login():
     # 如果已經登入，直接跳轉至管理後台
     if current_user.is_authenticated:
         return redirect(url_for('admin_dashboard'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        
+
         from models import Admin
         user = Admin.query.filter_by(username=username).first()
-        
+
         if user and user.check_password(password):
             login_user(user)
             flash('登入成功！', 'success')
@@ -181,7 +210,7 @@ def admin_login():
             return redirect(next_page or url_for('admin_dashboard'))
         else:
             flash('登入失敗，請檢查用戶名和密碼。', 'error')
-    
+
     return render_template('admin/login.html')
 
 
@@ -198,8 +227,8 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     """管理後台首頁"""
-    from models import Message, Service, News
-    
+    from models import Message, Service, News, Profile
+
     # 收集儀表板統計數據
     message_count = Message.query.count()
     replied_count = Message.query.filter_by(replied=True).count()
@@ -207,7 +236,7 @@ def admin_dashboard():
     active_service_count = Service.query.filter_by(active=True).count()
     news_count = News.query.count()
     featured_news_count = News.query.filter_by(is_featured=True).count()
-    
+
     stats = {
         'message_count': message_count,
         'replied_count': replied_count,
@@ -216,14 +245,19 @@ def admin_dashboard():
         'news_count': news_count,
         'featured_news_count': featured_news_count
     }
-    
+
     # 獲取最近留言
     recent_messages = Message.query.order_by(Message.created_at.desc()).limit(5).all()
-    
-    # 獲取最近消息
-    recent_news = News.query.order_by(News.publish_date.desc()).limit(5).all()
-    
-    return render_template('admin/dashboard.html', stats=stats, recent_messages=recent_messages, recent_news=recent_news)
+
+    # 獲取最近消息，先顯示精選，再按日期降序
+    recent_news = News.query.order_by(
+        News.is_featured.desc(),
+        News.publish_date.desc()
+    ).limit(5).all()
+
+    profile = Profile.query.first()
+
+    return render_template('admin/dashboard.html', stats=stats, recent_messages=recent_messages, recent_news=recent_news, profile=profile)
 
 
 @app.route('/admin/messages')
@@ -261,11 +295,11 @@ def admin_service_new():
         title = request.form.get('title')
         description = request.form.get('description')
         active = 'active' in request.form
-        
+
         if not title:
             flash('服務名稱不能為空', 'error')
             return redirect(url_for('admin_service_new'))
-        
+
         try:
             from models import Service
             new_service = Service(
@@ -280,7 +314,7 @@ def admin_service_new():
         except Exception as e:
             db.session.rollback()
             flash(f'添加失敗: {str(e)}', 'error')
-    
+
     return render_template('admin/service_form.html', service=None, is_new=True)
 
 
@@ -290,16 +324,16 @@ def admin_service_edit(service_id):
     """編輯服務項目"""
     from models import Service
     service = Service.query.get_or_404(service_id)
-    
+
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
         active = 'active' in request.form
-        
+
         if not title:
             flash('服務名稱不能為空', 'error')
             return redirect(url_for('admin_service_edit', service_id=service_id))
-        
+
         try:
             service.title = title
             service.description = description
@@ -310,7 +344,7 @@ def admin_service_edit(service_id):
         except Exception as e:
             db.session.rollback()
             flash(f'更新失敗: {str(e)}', 'error')
-    
+
     return render_template('admin/service_form.html', service=service, is_new=False)
 
 
@@ -320,7 +354,7 @@ def admin_service_delete(service_id):
     """刪除服務項目"""
     from models import Service
     service = Service.query.get_or_404(service_id)
-    
+
     try:
         db.session.delete(service)
         db.session.commit()
@@ -328,7 +362,7 @@ def admin_service_delete(service_id):
     except Exception as e:
         db.session.rollback()
         flash(f'刪除失敗: {str(e)}', 'error')
-    
+
     return redirect(url_for('admin_services'))
 
 
@@ -340,24 +374,24 @@ def admin_profile():
         current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
-        
+
         if not current_user.check_password(current_password):
             flash('當前密碼不正確', 'error')
             return redirect(url_for('admin_profile'))
-        
+
         if new_password != confirm_password:
             flash('新密碼和確認密碼不匹配', 'error')
             return redirect(url_for('admin_profile'))
-        
+
         if len(new_password) < 6:
             flash('新密碼至少需要6個字符', 'error')
             return redirect(url_for('admin_profile'))
-        
+
         current_user.set_password(new_password)
         db.session.commit()
         flash('密碼已成功更新', 'success')
         return redirect(url_for('admin_dashboard'))
-    
+
     return render_template('admin/profile.html')
 
 
@@ -366,7 +400,11 @@ def admin_profile():
 def admin_news():
     """最新消息管理頁面"""
     from models import News
-    news_posts = News.query.order_by(News.publish_date.desc()).all()
+    # 先顯示精選內容，然後按發布日期降序排序
+    news_posts = News.query.order_by(
+        News.is_featured.desc(),
+        News.publish_date.desc()
+    ).all()
     return render_template('admin/news.html', news_posts=news_posts)
 
 
@@ -379,11 +417,11 @@ def admin_news_new():
         content = request.form.get('content')
         is_featured = 'is_featured' in request.form
         active = 'active' in request.form
-        
+
         if not title or not content:
             flash('標題和內容不能為空', 'error')
             return redirect(url_for('admin_news_new'))
-        
+
         try:
             from models import News
             new_news = News(
@@ -399,7 +437,7 @@ def admin_news_new():
         except Exception as e:
             db.session.rollback()
             flash(f'添加失敗: {str(e)}', 'error')
-    
+
     return render_template('admin/news_form.html', news=None, is_new=True)
 
 
@@ -409,17 +447,17 @@ def admin_news_edit(news_id):
     """編輯消息"""
     from models import News
     news = News.query.get_or_404(news_id)
-    
+
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
         is_featured = 'is_featured' in request.form
         active = 'active' in request.form
-        
+
         if not title or not content:
             flash('標題和內容不能為空', 'error')
             return redirect(url_for('admin_news_edit', news_id=news_id))
-        
+
         try:
             news.title = title
             news.content = content
@@ -431,7 +469,7 @@ def admin_news_edit(news_id):
         except Exception as e:
             db.session.rollback()
             flash(f'更新失敗: {str(e)}', 'error')
-    
+
     return render_template('admin/news_form.html', news=news, is_new=False)
 
 
@@ -441,7 +479,7 @@ def admin_news_delete(news_id):
     """刪除消息"""
     from models import News
     news = News.query.get_or_404(news_id)
-    
+
     try:
         db.session.delete(news)
         db.session.commit()
@@ -449,5 +487,51 @@ def admin_news_delete(news_id):
     except Exception as e:
         db.session.rollback()
         flash(f'刪除失敗: {str(e)}', 'error')
-    
+
     return redirect(url_for('admin_news'))
+
+@app.route('/admin/profile/edit', methods=['GET', 'POST'])
+@login_required
+def admin_profile_edit():
+    """編輯個人小檔案"""
+    from models import Profile
+    profile = Profile.query.first() or Profile() #get existing or create new
+
+    if request.method == 'POST':
+        content = request.form.get('content')
+
+        if not content:
+            flash('個人小檔案內容不能為空', 'error')
+            return redirect(url_for('admin_profile_edit'))
+
+        try:
+            if not profile.id: #if new profile, add it to db
+                db.session.add(profile)
+            profile.content = content
+            db.session.commit()
+            flash('個人小檔案已更新成功', 'success')
+            return redirect(url_for('admin_dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'更新失敗: {str(e)}', 'error')
+
+    return render_template('admin/profile_edit.html', profile=profile)
+
+@app.route('/news/<int:news_id>')
+def news_detail(news_id):
+    """顯示單篇文章的詳細內容"""
+    from models import News, Profile
+    
+    # 獲取指定ID的文章，確保它是啟用狀態
+    news = News.query.filter_by(id=news_id, active=True).first_or_404()
+    
+    # 獲取個人資料以保持佈局一致性
+    profile = Profile.query.first()
+    
+    # 獲取其他活躍的最新消息作為"相關文章"
+    related_news = News.query.filter(News.id != news_id, News.active == True).order_by(
+        News.is_featured.desc(),
+        News.publish_date.desc()
+    ).limit(3).all()
+    
+    return render_template('news_detail.html', news=news, profile=profile, related_news=related_news)

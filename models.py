@@ -46,6 +46,20 @@ class Service(db.Model):
     def __repr__(self):
         return f'<Service {self.title}>'
 
+class Profile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    @staticmethod
+    def get_or_create():
+        profile = Profile.query.first()
+        if not profile:
+            profile = Profile(content="講師「Jonathan H. 」個人小檔案：\n覺得英文稱謂很傲口也可以叫我「蕭蕭」。\n雙魚座B型、\n銀櫃KTV VIP會員、\nMcDonald's點點卡持有人、\n東海中文系博士生、\n東海中文系兼任講師、\n教育部素養導向高教學習創新計畫（XPlorer探索者計畫）AI專班共同課程講師、\n東海大學AI學習體驗設計專班、核心工作坊教師。")
+            db.session.add(profile)
+            db.session.commit()
+        return profile
+
 class News(db.Model):
     """最新消息與貼文模型"""
     id = db.Column(db.Integer, primary_key=True)
