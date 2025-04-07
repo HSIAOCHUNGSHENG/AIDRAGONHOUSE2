@@ -546,24 +546,18 @@ footer a:hover {
     }
 }
 
-/* 修正手機版的文字溢出問題 */
-@media (max-width: 768px) {
-    /* 改善整體文字在手機上的顯示 */
-    body {
-        overflow-x: hidden;
-        width: 100%;
-    }
     
     /* 確保內容不會溢出容器 */
-    .contact-info, .services, .news-container, .profile {
+    .contact-info, .services, .news-container, .profile, .profile-text {
         word-wrap: break-word;
         overflow-wrap: break-word;
         word-break: break-word;
         hyphens: auto;
+        max-width: 100%;
     }
     
     /* 調整團隊照片區域 */
-    .team-photo img {
+    .team-photo {
         max-width: 100%;
         height: auto;
     }
@@ -571,21 +565,135 @@ footer a:hover {
     /* 聯絡資訊中的文字格式 */
     .contact-item {
         flex-wrap: wrap;
+        max-width: 100%;
     }
     
     /* 電子郵件地址不溢出 */
-    .contact-item a {
+    .contact-item a, .contact-item span {
         word-break: break-all;
+        max-width: 100%;
+        display: inline-block;
+    }
+    
+    /* 個人介紹文字控制 */
+    .profile-text p {
+        max-width: 100%;
+        word-break: break-word;
     }
     
     /* 服務描述內容控制 */
     .service-description {
         padding-left: 0;
         margin-top: 10px;
+        max-width: 100%;
     }
     
     /* 修復服務項目標題可能的溢出問題 */
     .service-item-title {
         font-size: 16px;
+        max-width: 100%;
     }
+    
+    /* 確保電子郵件按鈕顯示 */
+    .email-button {
+        display: flex !important;
+        z-index: 9999;
+    }
+}
+/* 修正手機版的文字溢出問題 */
+@media (max-width: 768px) {
+    /* 改善整體文字在手機上的顯示 */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+        position: relative;
+    }
+    
+    /* 確保內容不會溢出容器 */
+    .contact-info, .services, .news-container, .profile, .profile-text {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+    
+    /* 調整團隊照片區域 */
+    .team-photo {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* 聯絡資訊中的文字格式 */
+    .contact-item {
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+    
+    /* 電子郵件地址不溢出 */
+    .contact-item a, .contact-item span {
+        word-break: break-all;
+        max-width: 100%;
+        display: inline-block;
+    }
+    
+    /* 個人介紹文字控制 */
+    .profile-text p {
+        max-width: 100%;
+        word-break: break-word;
+    }
+    
+    /* 服務描述內容控制 */
+    .service-description {
+        padding-left: 0;
+        margin-top: 10px;
+        max-width: 100%;
+    }
+    
+    /* 修復服務項目標題可能的溢出問題 */
+    .service-item-title {
+        font-size: 16px;
+        max-width: 100%;
+    }
+    
+    /* 確保電子郵件按鈕顯示 */
+    .email-button {
+        display: flex !important;
+        z-index: 9999;
+    }
+}
+
+/* 固定在右下角的電子郵件按鈕 */
+.email-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.email-button a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+}
+
+.email-button i {
+    font-size: 24px;
+}
+
+.email-button:hover {
+    background-color: #c26a39;
+    transform: scale(1.1);
 }

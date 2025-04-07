@@ -1,0 +1,22 @@
+/* 修復文字對齊問題 */
+
+/* 確保所有服務描述文字靠左對齊 */
+.service-description {
+    text-align: left !important;
+}
+
+.service-description p {
+    text-align: left !important;
+}
+
+/* 在較小的屏幕上強制靠左對齊 */
+@media (max-width: 768px) {
+    .service-item,
+    .service-item-title,
+    .service-description,
+    .service-description p,
+    .service-description div,
+    .service-description span {
+        text-align: left !important;
+    }
+}
