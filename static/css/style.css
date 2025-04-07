@@ -50,13 +50,14 @@ header h1 {
 .temple-background {
     background-size: cover;
     background-position: center;
-    height: 300px;
+    height: 380px; /* 增加高度 */
     border-radius: 0 0 10px 10px;
     position: relative;
     margin-bottom: 30px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end; /* 改為底部對齊 */
+    padding-bottom: 40px; /* 底部增加間距 */
 }
 
 .profile {
@@ -70,12 +71,13 @@ header h1 {
     z-index: 2;
     box-shadow: 0 0 20px rgba(244, 197, 99, 0.6);
     border: 2px solid var(--secondary-color);
+    margin-top: 40px; /* 向下移動整個配置 */
 }
 
 .profile-image {
     width: 150px;
     height: 150px;
-    margin: 0 auto 15px;
+    margin: -95px auto 15px; /* 將圖像上移，形成露出頂部的效果 */
     position: relative;
 }
 
@@ -445,16 +447,20 @@ footer a:hover {
 
 @media (max-width: 600px) {
     .temple-background {
-        height: 250px;
+        height: 320px; /* 增加移動端的高度 */
+        align-items: flex-end; /* 確保在移動端也是底部對齊 */
+        padding-bottom: 30px; /* 移動端的底部間距 */
     }
     
     .profile {
         width: 90%;
+        margin-top: 30px; /* 移動端的頂部間距 */
     }
     
     .profile-image {
         width: 120px;
         height: 120px;
+        margin: -80px auto 15px; /* 調整移動端的圖像位置 */
     }
     
     .email-button {

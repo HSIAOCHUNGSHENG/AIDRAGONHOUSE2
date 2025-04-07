@@ -3,24 +3,31 @@
     /* 在移動設備上改變服務項目的布局 */
     .service-item {
         flex-direction: column !important;
-        padding: 15px 10px !important;
+        padding: 15px !important;
+    }
+    
+    /* 保持標題列為橫排 */
+    .service-item-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        margin-bottom: 12px !important;
+        width: 100% !important;
     }
     
     /* 在移動設備上調整圖標的樣式 */
     .service-item i {
-        margin-bottom: 10px !important;
-        margin-right: 0 !important;
-        font-size: 28px !important;
-        width: 100% !important;
-        text-align: center !important;
+        margin-right: 12px !important;
+        font-size: 24px !important;
+        flex-shrink: 0 !important;
     }
     
-    /* 在移動設備上調整文本樣式 */
-    .service-item p {
-        text-align: center !important;
-        font-size: 15px !important;  /* 稍微減小字體大小 */
-        word-break: break-word !important;  /* 確保長詞可以換行 */
-        width: 100% !important;
+    /* 在移動設備上調整標題文本樣式 */
+    .service-item-title {
+        font-size: 16px !important;
+        margin: 0 !important;
+        text-align: left !important;
     }
     
     /* 在移動設備上調整描述文本的樣式 */
