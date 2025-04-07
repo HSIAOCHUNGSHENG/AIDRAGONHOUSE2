@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} - AI臥龍崗</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Josefin+Sans:wght@300;400;600&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-fixes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bauhaus-fonts.css') }}">
+    
+    <!-- favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+    <style>
+        /* 文章詳情頁面樣式 */
+        .article-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .article-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+        
+        .article-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .article-date {
+            margin-right: 15px;
+        }
+        
+        .article-badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .article-content {
+            line-height: 1.8;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .article-content p {
+            margin-bottom: 15px;
+        }
+        
+        .article-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link i {
+            margin-right: 5px;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 相關文章 */
+        .related-articles {
+            margin-top: 40px;
+        }
+        
+        .related-articles h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .related-article-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .related-article-item {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .related-article-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .related-article-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .related-article-title a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .related-article-title a:hover {
+            text-decoration: underline;
+        }
+        
+        .related-article-date {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        @media (max-width: 767px) {
+            .article-title {
+                font-size: 1.6rem;
+            }
+            
+            .article-content {
+                font-size: 1rem;
+            }
+            
+            .related-article-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Jonathan H. 的AI臥龍崗</h1>
+    </header>
+    
+    <!-- 閃現消息顯示 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button class="close-flash">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="container">
+        <div class="temple-background" style="background-image: url({{ url_for('static', filename='images/temple_background.jpeg') }})"> 
+            <section class="profile"> 
+                <div class="profile-image"> 
+                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="蕭崇聖的照片"> 
+                </div> 
+                <h2 class="profile-name">蕭崇聖 講師</h2> 
+            </section> 
+        </div>
+        
+        <div class="content">
+            <div class="article-container">
+                <div class="article-header">
+                    <h1 class="article-title">{{ news.title }}</h1>
+                    <div class="article-meta">
+                        <span class="article-date"><i class="far fa-calendar-alt"></i> {{ news.publish_date.strftime('%Y-%m-%d') }}</span>
+                        {% if news.is_featured %}
+                            <span class="article-badge">精選文章</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="article-content">
+                    {{ news.content|safe }}
+                </div>
+                
+                <div class="article-footer">
+                    <a href="{{ url_for('index') }}" class="back-link"><i class="fas fa-arrow-left"></i> 返回首頁</a>
+                </div>
+                
+                {% if related_news %}
+                    <div class="related-articles">
+                        <h3>相關文章</h3>
+                        <div class="related-article-list">
+                            {% for related in related_news %}
+                                <div class="related-article-item">
+                                    <h4 class="related-article-title">
+                                        <a href="{{ url_for('news_detail', news_id=related.id) }}">{{ related.title }}</a>
+                                    </h4>
+                                    <div class="related-article-date">
+                                        <i class="far fa-calendar-alt"></i> {{ related.publish_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; {{ now.year }} AI臥龍崗 - 蕭崇聖的個人網站 | <a href="{{ url_for('admin_login') }}" class="admin-link">後台管理</a></p>
+    </footer>
+    
+    <a href="mailto:ommanibamehumpractice@gmail.com" class="email-button" title="寄送郵件">
+        <i class="fas fa-envelope"></i>
+    </a>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

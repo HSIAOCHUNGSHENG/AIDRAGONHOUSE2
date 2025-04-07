@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI臥龍崗 - 蕭崇聖的個人網站</title>
+    <title>Jonathan H. 的AI臥龍崗</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,10 +22,49 @@
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+
+    <style>
+        /* 閱讀更多按鈕 */
+        .read-more {
+            text-align: right;
+            margin-top: 15px;
+        }
+        
+        .read-more-link {
+            color: var(--primary-color);
+            font-weight: 500;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .read-more-link:hover {
+            background-color: rgba(217, 119, 66, 0.1);
+            text-decoration: none;
+        }
+        
+        .read-more-link i {
+            margin-left: 3px;
+            font-size: 14px;
+        }
+        
+        /* 新聞標題超鏈接樣式 */
+        .news-title a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .news-title a:hover {
+            color: #c26a39;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>AI臥龍崗</h1>
+        <h1>Jonathan H. 的AI臥龍崗</h1>
     </header>
     
     <!-- 閃現消息顯示 -->
@@ -55,6 +94,9 @@
         <div class="content">
             <section class="contact-info">
                 <h2>聯絡資訊</h2>
+                <div class="profile-text">
+                    {{ profile.content|nl2br }}
+                </div>
                 
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
@@ -147,9 +189,18 @@
                     {% if news_posts %}
                         {% for news in news_posts %}
                             <div class="news-item {% if news.is_featured %}featured{% endif %}">
-                                <h3 class="news-title">{{ news.title }}</h3>
+                                <h3 class="news-title">
+                                    <a href="{{ url_for('news_detail', news_id=news.id) }}">{{ news.title }}</a>
+                                </h3>
                                 <div class="news-date">{{ news.publish_date.strftime('%Y-%m-%d') }}</div>
-                                <div class="news-content">{{ news.content|safe }}</div>
+                                <div class="news-content">
+                                    {{ (news.content|striptags)[:200] + '...' if news.content|striptags|length > 200 else news.content|striptags }}
+                                </div>
+                                <div class="read-more">
+                                    <a href="{{ url_for('news_detail', news_id=news.id) }}" class="read-more-link">
+                                        繼續閱讀 <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -161,7 +212,7 @@
     </div>
     
     <footer>
-        <p>&copy; 2025 AI臥龍崗 - 蕭崇聖的個人網站 | <a href="{{ url_for('admin_login') }}" class="admin-link">後台管理</a></p>
+        <p>&copy; {{ now.year }} AI臥龍崗 - 蕭崇聖的個人網站 | <a href="{{ url_for('admin_login') }}" class="admin-link">後台管理</a></p>
     </footer>
     
     <a href="mailto:ommanibamehumpractice@gmail.com" class="email-button" title="寄送郵件">
