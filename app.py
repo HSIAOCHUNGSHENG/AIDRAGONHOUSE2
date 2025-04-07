@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from markupsafe import Markup
-from flask import Flask, render_template, request, flash, redirect, url_for, abort
+from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -599,3 +599,12 @@ def news_detail(news_id):
     
     return render_template('news_detail.html', news=news, profile=profile, 
                           related_news=related_news, contact_info=contact_info)
+@app.route('/robots.txt')
+def robots():
+    """提供 robots.txt 文件"""
+    return send_from_directory(app.static_folder, 'robots.txt')
+
+@app.route('/sitemap.xml')
+def sitemap():
+    """提供 sitemap.xml 文件"""
+    return send_from_directory(app.static_folder, 'sitemap.xml')
