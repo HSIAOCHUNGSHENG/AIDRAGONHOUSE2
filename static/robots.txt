@@ -1,4 +1,4 @@
-
 User-agent: *
 Allow: /
-Sitemap: https://aidragonhouse2.onrender.com/sitemap.xml
+Disallow: /admin/
+Sitemap: https://ai-wolong-gang.onrender.com/sitemap.xml
