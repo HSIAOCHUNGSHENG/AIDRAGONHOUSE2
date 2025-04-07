@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-fixes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/desktop-fixes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bauhaus-fonts.css') }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/mobile-fixes.css") }}">
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/text-alignment-fix.css") }}">
     
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
@@ -244,7 +246,7 @@
         {% endif %}
     </footer>
     
-    <div class="fixed-mail">
+    <div class="email-button">
         <a href="mailto:{{ contact_info.email }}"><i class="fas fa-envelope"></i></a>
     </div>
     
