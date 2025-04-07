@@ -545,3 +545,47 @@ footer a:hover {
         display: inline;
     }
 }
+
+/* 修正手機版的文字溢出問題 */
+@media (max-width: 768px) {
+    /* 改善整體文字在手機上的顯示 */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
+    /* 確保內容不會溢出容器 */
+    .contact-info, .services, .news-container, .profile {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+    }
+    
+    /* 調整團隊照片區域 */
+    .team-photo img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* 聯絡資訊中的文字格式 */
+    .contact-item {
+        flex-wrap: wrap;
+    }
+    
+    /* 電子郵件地址不溢出 */
+    .contact-item a {
+        word-break: break-all;
+    }
+    
+    /* 服務描述內容控制 */
+    .service-description {
+        padding-left: 0;
+        margin-top: 10px;
+    }
+    
+    /* 修復服務項目標題可能的溢出問題 */
+    .service-item-title {
+        font-size: 16px;
+    }
+}
