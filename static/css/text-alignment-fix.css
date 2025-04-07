@@ -20,3 +20,36 @@
         text-align: left !important;
     }
 }
+
+/* 修復聯絡資訊小介紹溢出問題 */
+.additional-info-content {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: left;
+}
+
+.contact-item.additional-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.contact-item.additional-info i {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .additional-info-content {
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    
+    .additional-info-content p {
+        margin: 0;
+        padding: 0;
+        text-align: left !important;
+    }
+}
