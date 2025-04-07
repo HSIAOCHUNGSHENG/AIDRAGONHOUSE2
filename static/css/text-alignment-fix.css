@@ -53,3 +53,52 @@
         text-align: left !important;
     }
 }
+
+/* 修復自定義資訊的溢出問題 */
+.profile-text,
+.profile-text p,
+.profile-text div,
+.profile-text span,
+.profile-text a {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.profile-text-container {
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 修復行動裝置下的溢出問題 */
+@media (max-width: 768px) {
+    .contact-item,
+    .profile-text,
+    .additional-info-content,
+    .contact-info {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    .profile-text *,
+    .additional-info-content * {
+        max-width: 100% !important;
+        overflow: hidden !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        word-break: break-all !important;
+    }
+    
+    .contact-info {
+        padding: 10px !important;
+    }
+}

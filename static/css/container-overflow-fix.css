@@ -1,0 +1,91 @@
+/* 解決容器溢出問題 */
+
+/* 確保所有容器都有正確的邊界和溢出處理 */
+.container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.content {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* 聯絡資訊容器修復 */
+.contact-info {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 修復個人檔案文字溢出 */
+.profile-text {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.profile-text p {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 0 0 10px 0;
+}
+
+/* 聯絡項目修復 */
+.contact-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 特別處理附加資訊 */
+.contact-item.additional-info {
+    flex-direction: column;
+    width: 100%;
+}
+
+.additional-info-content {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 5px 0;
+}
+
+.additional-info-content p {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 10px 0;
+    text-align: left !important;
+}
+
+/* 手機版特別處理 */
+@media (max-width: 768px) {
+    .content {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-info, 
+    .profile-text, 
+    .additional-info-content {
+        padding: 10px;
+    }
+}
