@@ -2,6 +2,7 @@ from app import db
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 class Admin(UserMixin, db.Model):
     """管理員模型"""
@@ -71,3 +72,27 @@ class News(db.Model):
     
     def __repr__(self):
         return f'<News {self.title}>'
+
+class ContactInfo(db.Model):
+    """聯絡資訊模型"""
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    line_id = db.Column(db.String(64), nullable=True)
+    qr_code_path = db.Column(db.String(255), nullable=True)
+    additional_info = db.Column(db.Text, nullable=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    @staticmethod
+    def get_or_create():
+        """獲取或創建聯絡資訊記錄"""
+        contact_info = ContactInfo.query.first()
+        if not contact_info:
+            contact_info = ContactInfo(
+                email="ommanibamehumpractice@gmail.com",
+                line_id="rainbowhunter",
+                qr_code_path="images/line_qrcode.jpg",
+                additional_info="歡迎透過Email或LINE與我聯繫"
+            )
+            db.session.add(contact_info)
+            db.session.commit()
+        return contact_info

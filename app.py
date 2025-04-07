@@ -161,33 +161,7 @@ def index():
     ).limit(3).all()
     
     profile = Profile.query.first()
-    
-    # 確保聯絡資訊不會出錯
-    try:
-        contact_info = ContactInfo.get_or_create()
-    except Exception as e:
-        print(f"Error retrieving contact info: {e}")
-        # 提供一個默認的聯絡資訊對象，如果無法從數據庫獲取
-        contact_info = type('ContactInfo', (), {
-            'email': 'ommanibamehumpractice@gmail.com',
-            'line_id': 'rainbowhunter',
-            'qr_code_path': 'images/line_qrcode.jpg',
-            'additional_info': '歡迎透過Email或LINE與我聯繫'
-        })
-    
-    # 確保強制初始化聯絡資訊表
-    if not hasattr(contact_info, 'email') or not contact_info.email:
-        db.session.query(ContactInfo).delete()
-        db.session.commit()
-        new_contact = ContactInfo(
-            email="ommanibamehumpractice@gmail.com",
-            line_id="rainbowhunter",
-            qr_code_path="images/line_qrcode.jpg",
-            additional_info="歡迎透過Email或LINE與我聯繫"
-        )
-        db.session.add(new_contact)
-        db.session.commit()
-        contact_info = new_contact
+    contact_info = ContactInfo.get_or_create()
     
     return render_template('index.html', services=services, news_posts=news_posts, profile=profile, contact_info=contact_info)
 
@@ -561,31 +535,7 @@ def admin_profile_edit():
 def admin_contact():
     """聯絡資訊管理頁面"""
     from models import ContactInfo
-    
-    # 嘗試獲取聯絡資訊，如果不存在則創建
-    try:
-        contact_info = ContactInfo.get_or_create()
-    except Exception as e:
-        print(f"Error retrieving contact info in admin_contact: {e}")
-        # 如果獲取失敗，創建一個新的聯絡資訊記錄
-        try:
-            contact_info = ContactInfo(
-                email="ommanibamehumpractice@gmail.com",
-                line_id="rainbowhunter",
-                qr_code_path="images/line_qrcode.jpg",
-                additional_info="歡迎透過Email或LINE與我聯繫"
-            )
-            db.session.add(contact_info)
-            db.session.commit()
-        except Exception as e2:
-            print(f"Could not create default contact info: {e2}")
-            # 提供一個對象，但不保存到數據庫
-            contact_info = type('ContactInfo', (), {
-                'email': 'ommanibamehumpractice@gmail.com',
-                'line_id': 'rainbowhunter',
-                'qr_code_path': 'images/line_qrcode.jpg',
-                'additional_info': '歡迎透過Email或LINE與我聯繫'
-            })
+    contact_info = ContactInfo.get_or_create()
     
     if request.method == 'POST':
         email = request.form.get('email')
@@ -597,40 +547,29 @@ def admin_contact():
             return redirect(url_for('admin_contact'))
         
         try:
-            # 檢查聯絡資訊對象是否為真實數據庫模型
-            if not hasattr(contact_info, 'id') or not isinstance(contact_info.id, int):
-                # 創建新的聯絡資訊記錄
-                contact_info = ContactInfo(
-                    email=email,
-                    line_id=line_id,
-                    additional_info=additional_info
-                )
-                db.session.add(contact_info)
-            else:
-                # 處理QR碼圖片上傳
-                qr_code_file = request.files.get('qr_code')
-                if qr_code_file and qr_code_file.filename:
-                    # 確保 static/images 目錄存在
-                    import os
-                    upload_dir = os.path.join('static', 'images')
-                    if not os.path.exists(upload_dir):
-                        os.makedirs(upload_dir)
-                    
-                    # 獲取文件擴展名並保存
-                    filename = f"line_qrcode_{int(datetime.now().timestamp())}"
-                    ext = os.path.splitext(qr_code_file.filename)[1]
-                    full_filename = f"{filename}{ext}"
-                    file_path = os.path.join(upload_dir, full_filename)
-                    qr_code_file.save(file_path)
-                    
-                    # 更新數據庫中的QR碼路徑
-                    contact_info.qr_code_path = os.path.join('images', full_filename)
+            # 處理QR碼圖片上傳
+            qr_code_file = request.files.get('qr_code')
+            if qr_code_file and qr_code_file.filename:
+                # 確保 static/images 目錄存在
+                import os
+                upload_dir = os.path.join('static', 'images')
+                if not os.path.exists(upload_dir):
+                    os.makedirs(upload_dir)
                 
-                # 更新其他信息
-                contact_info.email = email
-                contact_info.line_id = line_id
-                contact_info.additional_info = additional_info
+                # 獲取文件擴展名並保存
+                filename = f"line_qrcode_{int(datetime.now().timestamp())}"
+                ext = os.path.splitext(qr_code_file.filename)[1]
+                full_filename = f"{filename}{ext}"
+                file_path = os.path.join(upload_dir, full_filename)
+                qr_code_file.save(file_path)
+                
+                # 更新數據庫中的QR碼路徑
+                contact_info.qr_code_path = os.path.join('images', full_filename)
             
+            # 更新其他信息
+            contact_info.email = email
+            contact_info.line_id = line_id
+            contact_info.additional_info = additional_info
             db.session.commit()
             flash('聯絡資訊已更新成功', 'success')
             return redirect(url_for('admin_dashboard'))
@@ -639,63 +578,6 @@ def admin_contact():
             flash(f'更新失敗: {str(e)}', 'error')
     
     return render_template('admin/contact_form.html', contact_info=contact_info)
-
-@app.route('/api/checkdb')
-def check_database():
-    """檢查數據庫表是否存在並包含數據"""
-    from flask import jsonify
-    try:
-        # 檢查Admin表
-        from models import Admin
-        admin_count = Admin.query.count()
-        
-        # 檢查Service表
-        from models import Service
-        service_count = Service.query.count()
-        
-        # 檢查News表
-        from models import News
-        news_count = News.query.count()
-        
-        # 檢查Profile表
-        from models import Profile
-        profile_count = Profile.query.count()
-        
-        # 檢查ContactInfo表
-        from models import ContactInfo
-        contact_count = ContactInfo.query.count()
-        
-        # 如果ContactInfo表為空，嘗試創建一個預設記錄
-        if contact_count == 0:
-            try:
-                default_contact = ContactInfo(
-                    email="ommanibamehumpractice@gmail.com",
-                    line_id="rainbowhunter",
-                    qr_code_path="images/line_qrcode.jpg",
-                    additional_info="歡迎透過Email或LINE與我聯繫"
-                )
-                db.session.add(default_contact)
-                db.session.commit()
-                contact_count = 1
-            except Exception as e:
-                return jsonify({
-                    'error': f"Error creating default contact info: {str(e)}",
-                    'status': 'error'
-                })
-        
-        return jsonify({
-            'admin': admin_count,
-            'service': service_count,
-            'news': news_count,
-            'profile': profile_count,
-            'contact': contact_count,
-            'status': 'ok'
-        })
-    except Exception as e:
-        return jsonify({
-            'error': f"Database error: {str(e)}",
-            'status': 'error'
-        })
 
 @app.route('/news/<int:news_id>')
 def news_detail(news_id):
@@ -707,19 +589,7 @@ def news_detail(news_id):
     
     # 獲取個人資料以保持佈局一致性
     profile = Profile.query.first()
-    
-    # 確保聯絡資訊不會出錯
-    try:
-        contact_info = ContactInfo.get_or_create()
-    except Exception as e:
-        print(f"Error retrieving contact info in news_detail: {e}")
-        # 提供一個默認的聯絡資訊對象，如果無法從數據庫獲取
-        contact_info = type('ContactInfo', (), {
-            'email': 'ommanibamehumpractice@gmail.com',
-            'line_id': 'rainbowhunter',
-            'qr_code_path': 'images/line_qrcode.jpg',
-            'additional_info': '歡迎透過Email或LINE與我聯繫'
-        })
+    contact_info = ContactInfo.get_or_create()
     
     # 獲取其他活躍的最新消息作為"相關文章"
     related_news = News.query.filter(News.id != news_id, News.active == True).order_by(
