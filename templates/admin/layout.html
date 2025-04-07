@@ -17,6 +17,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
     
     <!-- favicon -->
+    <style>
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     
@@ -114,5 +124,8 @@
     <!-- Custom scripts -->
     <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
     {% block scripts %}{% endblock %}
+<footer>
+        <p>&copy; {{ now.year }} AI臥龍崗 - 蕭崇聖的個人網站</p>
+    </footer>
 </body>
 </html>

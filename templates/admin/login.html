@@ -15,6 +15,15 @@
     
     <!-- Admin CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    
+    <style>
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body class="login-page">
     <!-- 閃現消息顯示 -->
@@ -59,6 +68,10 @@
         
         <div class="back-to-site">
             <a href="{{ url_for('index') }}"><i class="fas fa-arrow-left"></i> 返回首頁</a>
+        </div>
+        
+        <div class="login-footer">
+            <p>&copy; {{ now.year }} AI臥龍崗 - 蕭崇聖的個人網站</p>
         </div>
     </div>
     

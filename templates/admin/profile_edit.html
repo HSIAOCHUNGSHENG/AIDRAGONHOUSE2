@@ -1,0 +1,21 @@
+
+{% extends "admin/layout.html" %}
+
+{% block title %}編輯個人小檔案 - {{ super() }}{% endblock %}
+
+{% block header_title %}編輯個人小檔案{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <form method="POST" class="form">
+        <div class="form-group">
+            <label for="content">個人小檔案內容：</label>
+            <textarea id="content" name="content" rows="10" class="form-control" required>{{ profile.content }}</textarea>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存更改</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
