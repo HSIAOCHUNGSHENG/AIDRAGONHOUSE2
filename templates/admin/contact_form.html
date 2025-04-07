@@ -1,0 +1,49 @@
+{% extends 'admin/layout.html' %}
+
+{% block title %}管理聯絡資訊{% endblock %}
+
+{% block content %}
+<div class="admin-section">
+    <h2>管理聯絡資訊</h2>
+    <p class="admin-description">
+        在這裡管理你的聯絡資訊，包括電子郵件、LINE ID和QR碼等。這些資訊將顯示在網站的聯絡區塊中。
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" class="admin-form">
+        <div class="form-group">
+            <label for="email" class="required-field">電子郵件</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ contact_info.email }}" required>
+            <small class="form-text text-muted">此電子郵件地址將用於「聯絡我們」區塊和郵件按鈕</small>
+        </div>
+
+        <div class="form-group">
+            <label for="line_id">LINE ID</label>
+            <input type="text" id="line_id" name="line_id" class="form-control" value="{{ contact_info.line_id or '' }}">
+            <small class="form-text text-muted">若留空，LINE ID 將不會顯示在網站上</small>
+        </div>
+
+        <div class="form-group">
+            <label for="qr_code">LINE QR碼</label>
+            <input type="file" id="qr_code" name="qr_code" class="form-control" accept="image/*">
+            {% if contact_info.qr_code_path %}
+            <div class="current-image">
+                <p>目前的 QR 碼：</p>
+                <img src="{{ url_for('static', filename=contact_info.qr_code_path) }}" alt="目前的 LINE QR 碼" style="max-width: 150px;">
+            </div>
+            {% endif %}
+            <small class="form-text text-muted">若不上傳新圖片，將保留現有QR碼圖片</small>
+        </div>
+
+        <div class="form-group">
+            <label for="additional_info">額外聯絡資訊</label>
+            <textarea id="additional_info" name="additional_info" class="form-control" rows="4">{{ contact_info.additional_info or '' }}</textarea>
+            <small class="form-text text-muted">可添加其他聯絡方式或說明 (選填)</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">儲存變更</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">返回儀表板</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

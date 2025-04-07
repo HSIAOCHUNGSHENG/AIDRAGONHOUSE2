@@ -6,77 +6,93 @@
 
 {% block content %}
 <div class="dashboard">
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-envelope"></i>
+    <div class="dashboard-panels">
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-envelope"></i> 留言統計</div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.message_count }}</div>
+                    <div class="stat-label">留言總數</div>
+                </div>
             </div>
-            <div class="stat-info">
-                <h3>留言總數</h3>
-                <p class="stat-number">{{ stats.message_count }}</p>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-reply"></i>
-            </div>
-            <div class="stat-info">
-                <h3>已回覆留言</h3>
-                <p class="stat-number">{{ stats.replied_count }}</p>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-reply"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.replied_count }}</div>
+                    <div class="stat-label">已回覆留言</div>
+                </div>
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-tasks"></i>
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-tasks"></i> 服務項目統計</div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.service_count }}</div>
+                    <div class="stat-label">服務總數</div>
+                </div>
             </div>
-            <div class="stat-info">
-                <h3>服務總數</h3>
-                <p class="stat-number">{{ stats.service_count }}</p>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-info">
-                <h3>顯示中服務</h3>
-                <p class="stat-number">{{ stats.active_service_count }}</p>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.active_service_count }}</div>
+                    <div class="stat-label">顯示中服務</div>
+                </div>
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-newspaper"></i> 最新消息統計</div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.news_count }}</div>
+                    <div class="stat-label">消息總數</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.featured_news_count }}</div>
+                    <div class="stat-label">精選消息</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-actions">
+        <h3>快速操作</h3>
+        <div class="action-cards">
+            <a href="{{ url_for('admin_service_new') }}" class="action-card">
+                <i class="fas fa-plus-circle"></i>
+                <span>新增服務項目</span>
+            </a>
+            <a href="{{ url_for('admin_news_new') }}" class="action-card">
                 <i class="fas fa-newspaper"></i>
-            </div>
-            <div class="stat-info">
-                <h3>最新消息總數</h3>
-                <p class="stat-number">{{ stats.news_count }}</p>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-info">
-                <h3>精選消息</h3>
-                <p class="stat-number">{{ stats.featured_news_count }}</p>
-            </div>
+                <span>發布最新消息</span>
+            </a>
+            <a href="{{ url_for('admin_profile_edit') }}" class="action-card">
+                <i class="fas fa-user-edit"></i>
+                <span>編輯個人資料</span>
+            </a>
+            <a href="{{ url_for('admin_contact') }}" class="action-card">
+                <i class="fas fa-address-card"></i>
+                <span>管理聯絡資訊</span>
+            </a>
         </div>
     </div>
     
     <div class="dashboard-panels">
         <div class="panel recent-messages">
-            <div class="panel-header">
-                <h3>最近留言</h3>
+            <div class="panel-title">
+                <i class="fas fa-envelope"></i> 最近留言
                 <a href="{{ url_for('admin_messages') }}" class="view-all">查看全部</a>
             </div>
             <div class="panel-body">
                 {% if recent_messages %}
-                    <table class="data-table">
+                    <table class="activity-table">
                         <thead>
                             <tr>
                                 <th>留言者</th>
@@ -94,13 +110,13 @@
                                 <td>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                                 <td>
                                     {% if message.replied %}
-                                    <span class="status status-replied">已回覆</span>
+                                    <span class="status status-active">已回覆</span>
                                     {% else %}
-                                    <span class="status status-pending">未回覆</span>
+                                    <span class="status status-unread">未回覆</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{{ url_for('admin_message_detail', message_id=message.id) }}" class="action-btn view-btn">
+                                    <a href="{{ url_for('admin_message_detail', message_id=message.id) }}" class="action-btn edit-btn">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
@@ -115,13 +131,13 @@
         </div>
         
         <div class="panel recent-news">
-            <div class="panel-header">
-                <h3>最近消息</h3>
+            <div class="panel-title">
+                <i class="fas fa-newspaper"></i> 最近消息
                 <a href="{{ url_for('admin_news') }}" class="view-all">查看全部</a>
             </div>
             <div class="panel-body">
                 {% if recent_news %}
-                    <table class="data-table">
+                    <table class="activity-table">
                         <thead>
                             <tr>
                                 <th>標題</th>

@@ -1,0 +1,30 @@
+                    <li>
+                        <a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>
+                            <i class="fas fa-tachometer-alt"></i> 儀表板
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_messages') }}" {% if request.endpoint == 'admin_messages' or request.endpoint == 'admin_message_detail' %}class="active"{% endif %}>
+                            <i class="fas fa-envelope"></i> 留言管理
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_services') }}" {% if request.endpoint == 'admin_services' or request.endpoint == 'admin_service_new' or request.endpoint == 'admin_service_edit' %}class="active"{% endif %}>
+                            <i class="fas fa-tasks"></i> 服務項目
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_news') }}" {% if request.endpoint == 'admin_news' or request.endpoint == 'admin_news_new' or request.endpoint == 'admin_news_edit' %}class="active"{% endif %}>
+                            <i class="fas fa-newspaper"></i> 最新消息
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_profile') }}" {% if request.endpoint == 'admin_profile' %}class="active"{% endif %}>
+                            <i class="fas fa-user-cog"></i> 個人設置
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_contact') }}" {% if request.endpoint == 'admin_contact' %}class="active"{% endif %}>
+                            <i class="fas fa-address-card"></i> 聯絡資訊
+                        </a>
+                    </li>
