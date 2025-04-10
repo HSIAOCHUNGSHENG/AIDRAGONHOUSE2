@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
+from s3_uploader import S3Uploader
 
 def nl2br(value):
     return Markup(value.replace('\n', '<br>'))
@@ -30,6 +31,15 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 限制上傳文件大小為 16MB
+
+# Amazon S3 配置
+app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('AWS_ACCESS_KEY_ID')
+app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+app.config['AWS_REGION'] = os.environ.get('AWS_REGION', 'ap-northeast-1')  # 默認東京區域
+app.config['AWS_BUCKET_NAME'] = os.environ.get('AWS_BUCKET_NAME')
+
+# 初始化 S3 上傳器
+s3_uploader = S3Uploader(app)
 
 # 確保上傳目錄存在
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -704,6 +714,7 @@ def admin_portfolio_new():
         description = request.form.get('description')
         order = request.form.get('order', 0, type=int)
         active = 'active' in request.form
+        external_image_url = request.form.get('external_image_url')
         
         if not title or not description:
             flash('標題和描述不能為空', 'error')
@@ -721,7 +732,11 @@ def admin_portfolio_new():
                 active=active
             )
             
-            # 處理圖片上傳
+            # 處理外部圖片URL
+            if external_image_url and external_image_url.strip():
+                new_portfolio.external_image_url = external_image_url.strip()
+            
+            # 處理圖片上傳 (優先使用上傳的圖片)
             image_file = request.files.get('image')
             if image_file and image_file.filename:
                 # 確保上傳目錄存在
@@ -738,6 +753,8 @@ def admin_portfolio_new():
                 
                 # 更新數據庫中的圖片路徑
                 new_portfolio.image_path = os.path.join('images', 'portfolio', full_filename)
+                # 如果上傳了圖片，清除外部URL（兩者只能存在一個）
+                new_portfolio.external_image_url = None
             
             db.session.add(new_portfolio)
             db.session.commit()
@@ -762,6 +779,8 @@ def admin_portfolio_edit(portfolio_id):
         order = request.form.get('order', 0, type=int)
         active = 'active' in request.form
         remove_image = 'remove_image' in request.form
+        external_image_url = request.form.get('external_image_url')
+        remove_external_image = 'remove_external_image' in request.form
         
         if not title or not description:
             flash('標題和描述不能為空', 'error')
@@ -777,7 +796,7 @@ def admin_portfolio_edit(portfolio_id):
             portfolio.order = order
             portfolio.active = active
             
-            # 處理圖片操作
+            # 處理本地圖片操作
             if remove_image and portfolio.image_path:
                 # 如果用戶選擇刪除當前圖片
                 try:
@@ -786,6 +805,22 @@ def admin_portfolio_edit(portfolio_id):
                 except:
                     pass # 如果刪除失敗，繼續執行（可能是因為文件不存在）
                 portfolio.image_path = None
+                
+            # 處理外部圖片URL操作
+            if remove_external_image and portfolio.external_image_url:
+                portfolio.external_image_url = None
+                
+            # 處理新的外部圖片URL
+            if external_image_url and external_image_url.strip() and not remove_external_image:
+                portfolio.external_image_url = external_image_url.strip()
+                # 如果設置了外部URL且沒有上傳新圖片，清除本地圖片
+                if not (request.files.get('image') and request.files.get('image').filename):
+                    if portfolio.image_path:
+                        try:
+                            os.remove(os.path.join('static', portfolio.image_path))
+                        except:
+                            pass
+                    portfolio.image_path = None
             
             # 處理新圖片上傳
             image_file = request.files.get('image')
@@ -811,6 +846,8 @@ def admin_portfolio_edit(portfolio_id):
                 
                 # 更新數據庫中的圖片路徑
                 portfolio.image_path = os.path.join('images', 'portfolio', full_filename)
+                # 如果上傳了新圖片，清除外部URL（兩者只能存在一個）
+                portfolio.external_image_url = None
             
             portfolio.updated_at = datetime.utcnow()
             db.session.commit()

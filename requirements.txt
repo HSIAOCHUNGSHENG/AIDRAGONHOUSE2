@@ -12,3 +12,5 @@ cairosvg
 pillow
 reportlab
 svglib
+boto3
+markupsafe

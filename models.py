@@ -79,6 +79,7 @@ class Portfolio(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_path = db.Column(db.String(255), nullable=True)
+    external_image_url = db.Column(db.String(255), nullable=True)  # 新增外部圖片URL字段（如Imgur链接）
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     order = db.Column(db.Integer, default=0)  # 用於自定義排序
