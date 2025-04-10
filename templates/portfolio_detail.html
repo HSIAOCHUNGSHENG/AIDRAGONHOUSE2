@@ -217,6 +217,10 @@
         <div class="portfolio-image-container">
             <img src="{{ url_for('static', filename=portfolio.image_path) }}" alt="{{ portfolio.title }}" class="portfolio-image">
         </div>
+        {% elif portfolio.external_image_url %}
+        <div class="portfolio-image-container">
+            <img src="{{ portfolio.external_image_url }}" alt="{{ portfolio.title }}" class="portfolio-image">
+        </div>
         {% endif %}
         
         <div class="portfolio-content">
@@ -231,6 +235,8 @@
                 <div class="related-portfolio-item">
                     {% if related.image_path %}
                     <img src="{{ url_for('static', filename=related.image_path) }}" alt="{{ related.title }}" class="related-portfolio-image">
+                    {% elif related.external_image_url %}
+                    <img src="{{ related.external_image_url }}" alt="{{ related.title }}" class="related-portfolio-image">
                     {% else %}
                     <div class="portfolio-image-placeholder" style="height: 150px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-image" style="font-size: 2rem; color: #ccc;"></i>

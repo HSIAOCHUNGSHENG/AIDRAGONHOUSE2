@@ -49,6 +49,9 @@
                     <td>
                         {% if portfolio.image_path %}
                         <img src="{{ url_for('static', filename=portfolio.image_path) }}" alt="{{ portfolio.title }}" style="max-height: 50px; max-width: 100px;">
+                        {% elif portfolio.external_image_url %}
+                        <img src="{{ portfolio.external_image_url }}" alt="{{ portfolio.title }}" style="max-height: 50px; max-width: 100px;">
+                        <small class="d-block" style="font-size: 0.7rem; color: #666;">(外部圖片)</small>
                         {% else %}
                         <span class="no-image">無圖片</span>
                         {% endif %}

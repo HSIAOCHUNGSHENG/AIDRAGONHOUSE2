@@ -436,6 +436,8 @@
                             <div class="portfolio-item">
                                 {% if portfolio.image_path %}
                                 <img src="{{ url_for('static', filename=portfolio.image_path) }}" alt="{{ portfolio.title }}" class="portfolio-image">
+                                {% elif portfolio.external_image_url %}
+                                <img src="{{ portfolio.external_image_url }}" alt="{{ portfolio.title }}" class="portfolio-image">
                                 {% else %}
                                 <div class="portfolio-image-placeholder">
                                     <i class="fas fa-image"></i>
