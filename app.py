@@ -150,7 +150,12 @@ with app.app_context():
 @app.route('/')
 def index():
     # 從數據庫獲取活躍服務和最新消息
-    from models import Service, News, Profile, ContactInfo
+    from models import Service, News, Profile, ContactInfo, Portfolio
+    from flask import request
+    
+    # 獲取作品展示分頁參數
+    portfolio_page = request.args.get('portfolio_page', 1, type=int)
+    portfolio_per_page = 6  # 每頁顯示6個作品
     
     services = Service.query.filter_by(active=True).all()
     
@@ -160,10 +165,32 @@ def index():
         News.publish_date.desc()  # 然後按日期降序
     ).limit(3).all()
     
+    # 查詢作品展示
+    portfolio_query = Portfolio.query.filter_by(active=True).order_by(
+        Portfolio.order.asc(),  # 先按自定義排序
+        Portfolio.created_at.desc()  # 然後按建立日期降序
+    )
+    
+    # 計算總作品數和總頁數
+    portfolio_total = portfolio_query.count()
+    portfolio_pages = (portfolio_total + portfolio_per_page - 1) // portfolio_per_page  # 向上取整
+    
+    # 獲取當前頁的作品
+    portfolios = portfolio_query.offset((portfolio_page - 1) * portfolio_per_page).limit(portfolio_per_page).all()
+    
     profile = Profile.query.first()
     contact_info = ContactInfo.get_or_create()
     
-    return render_template('index.html', services=services, news_posts=news_posts, profile=profile, contact_info=contact_info)
+    return render_template(
+        'index.html', 
+        services=services, 
+        news_posts=news_posts, 
+        profile=profile, 
+        contact_info=contact_info,
+        portfolios=portfolios,
+        portfolio_page=portfolio_page,
+        portfolio_pages=portfolio_pages
+    )
 
 @app.route('/googleacb1ce472a34877b.html')
 def google_verification():
@@ -240,7 +267,7 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     """管理後台首頁"""
-    from models import Message, Service, News, Profile
+    from models import Message, Service, News, Profile, Portfolio
 
     # 收集儀表板統計數據
     message_count = Message.query.count()
@@ -249,6 +276,8 @@ def admin_dashboard():
     active_service_count = Service.query.filter_by(active=True).count()
     news_count = News.query.count()
     featured_news_count = News.query.filter_by(is_featured=True).count()
+    portfolio_count = Portfolio.query.count()
+    active_portfolio_count = Portfolio.query.filter_by(active=True).count()
 
     stats = {
         'message_count': message_count,
@@ -256,7 +285,9 @@ def admin_dashboard():
         'service_count': service_count,
         'active_service_count': active_service_count,
         'news_count': news_count,
-        'featured_news_count': featured_news_count
+        'featured_news_count': featured_news_count,
+        'portfolio_count': portfolio_count,
+        'active_portfolio_count': active_portfolio_count
     }
 
     # 獲取最近留言
@@ -608,3 +639,196 @@ def robots():
 def sitemap():
     """提供 sitemap.xml 文件"""
     return send_from_directory(app.static_folder, 'sitemap.xml')
+
+@app.route('/portfolio/<int:portfolio_id>')
+def portfolio_detail(portfolio_id):
+    """顯示作品展示的詳細內容"""
+    from models import Portfolio, Profile, ContactInfo
+    
+    # 獲取指定ID的作品，確保它是啟用狀態
+    portfolio = Portfolio.query.filter_by(id=portfolio_id, active=True).first_or_404()
+    
+    # 獲取個人資料以保持佈局一致性
+    profile = Profile.query.first()
+    contact_info = ContactInfo.get_or_create()
+    
+    # 獲取其他活躍的作品作為"相關作品"
+    related_portfolios = Portfolio.query.filter(
+        Portfolio.id != portfolio_id, 
+        Portfolio.active == True
+    ).order_by(
+        Portfolio.order.asc(),
+        Portfolio.created_at.desc()
+    ).limit(3).all()
+    
+    return render_template('portfolio_detail.html', 
+                           portfolio=portfolio, 
+                           profile=profile, 
+                           related_portfolios=related_portfolios, 
+                           contact_info=contact_info)
+
+# 作品展示管理路由
+@app.route('/admin/portfolios')
+@login_required
+def admin_portfolios():
+    """作品展示管理頁面"""
+    from models import Portfolio
+    # 按排序順序和建立日期降序排列
+    portfolios = Portfolio.query.order_by(
+        Portfolio.order.asc(),
+        Portfolio.created_at.desc()
+    ).all()
+    return render_template('admin/portfolios.html', portfolios=portfolios)
+
+@app.route('/admin/portfolio/new', methods=['GET', 'POST'])
+@login_required
+def admin_portfolio_new():
+    """添加新作品展示"""
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        order = request.form.get('order', 0, type=int)
+        active = 'active' in request.form
+        
+        if not title or not description:
+            flash('標題和描述不能為空', 'error')
+            return redirect(url_for('admin_portfolio_new'))
+        
+        try:
+            from models import Portfolio
+            import os
+            from datetime import datetime
+            
+            new_portfolio = Portfolio(
+                title=title,
+                description=description,
+                order=order,
+                active=active
+            )
+            
+            # 處理圖片上傳
+            image_file = request.files.get('image')
+            if image_file and image_file.filename:
+                # 確保上傳目錄存在
+                upload_dir = os.path.join('static', 'images', 'portfolio')
+                if not os.path.exists(upload_dir):
+                    os.makedirs(upload_dir)
+                
+                # 生成唯一文件名
+                filename = f"portfolio_{int(datetime.now().timestamp())}"
+                ext = os.path.splitext(image_file.filename)[1]
+                full_filename = f"{filename}{ext}"
+                file_path = os.path.join(upload_dir, full_filename)
+                image_file.save(file_path)
+                
+                # 更新數據庫中的圖片路徑
+                new_portfolio.image_path = os.path.join('images', 'portfolio', full_filename)
+            
+            db.session.add(new_portfolio)
+            db.session.commit()
+            flash('作品已添加成功', 'success')
+            return redirect(url_for('admin_portfolios'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'添加失敗: {str(e)}', 'error')
+    
+    return render_template('admin/portfolio_form.html', portfolio=None, is_new=True)
+
+@app.route('/admin/portfolio/edit/<int:portfolio_id>', methods=['GET', 'POST'])
+@login_required
+def admin_portfolio_edit(portfolio_id):
+    """編輯作品展示"""
+    from models import Portfolio
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        order = request.form.get('order', 0, type=int)
+        active = 'active' in request.form
+        remove_image = 'remove_image' in request.form
+        
+        if not title or not description:
+            flash('標題和描述不能為空', 'error')
+            return redirect(url_for('admin_portfolio_edit', portfolio_id=portfolio_id))
+        
+        try:
+            import os
+            from datetime import datetime
+            
+            # 更新基本信息
+            portfolio.title = title
+            portfolio.description = description
+            portfolio.order = order
+            portfolio.active = active
+            
+            # 處理圖片操作
+            if remove_image and portfolio.image_path:
+                # 如果用戶選擇刪除當前圖片
+                try:
+                    # 嘗試從文件系統中刪除圖片
+                    os.remove(os.path.join('static', portfolio.image_path))
+                except:
+                    pass # 如果刪除失敗，繼續執行（可能是因為文件不存在）
+                portfolio.image_path = None
+            
+            # 處理新圖片上傳
+            image_file = request.files.get('image')
+            if image_file and image_file.filename:
+                # 確保上傳目錄存在
+                upload_dir = os.path.join('static', 'images', 'portfolio')
+                if not os.path.exists(upload_dir):
+                    os.makedirs(upload_dir)
+                
+                # 生成唯一文件名
+                filename = f"portfolio_{int(datetime.now().timestamp())}"
+                ext = os.path.splitext(image_file.filename)[1]
+                full_filename = f"{filename}{ext}"
+                file_path = os.path.join(upload_dir, full_filename)
+                image_file.save(file_path)
+                
+                # 如果原來有圖片，刪除舊圖片
+                if portfolio.image_path:
+                    try:
+                        os.remove(os.path.join('static', portfolio.image_path))
+                    except:
+                        pass
+                
+                # 更新數據庫中的圖片路徑
+                portfolio.image_path = os.path.join('images', 'portfolio', full_filename)
+            
+            portfolio.updated_at = datetime.utcnow()
+            db.session.commit()
+            flash('作品已更新成功', 'success')
+            return redirect(url_for('admin_portfolios'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'更新失敗: {str(e)}', 'error')
+    
+    return render_template('admin/portfolio_form.html', portfolio=portfolio, is_new=False)
+
+@app.route('/admin/portfolio/delete/<int:portfolio_id>', methods=['POST'])
+@login_required
+def admin_portfolio_delete(portfolio_id):
+    """刪除作品展示"""
+    from models import Portfolio
+    portfolio = Portfolio.query.get_or_404(portfolio_id)
+    
+    try:
+        # 如果有圖片，嘗試從文件系統中刪除
+        if portfolio.image_path:
+            import os
+            try:
+                os.remove(os.path.join('static', portfolio.image_path))
+            except:
+                pass # 如果刪除失敗，繼續執行
+        
+        # 從數據庫中刪除記錄
+        db.session.delete(portfolio)
+        db.session.commit()
+        flash('作品已刪除', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'刪除失敗: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_portfolios'))
