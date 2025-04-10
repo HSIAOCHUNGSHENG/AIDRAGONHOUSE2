@@ -1,11 +1,13 @@
 import os
+import uuid
 from datetime import datetime
 
 from markupsafe import Markup
-from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory
+from flask import Flask, render_template, request, flash, redirect, url_for, abort, send_from_directory, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.utils import secure_filename
 
 def nl2br(value):
     return Markup(value.replace('\n', '<br>'))
@@ -22,6 +24,15 @@ app = Flask(__name__)
 app.jinja_env.filters['nl2br'] = nl2br
 # setup a secret key, required by sessions
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
+
+# 設置上傳文件相關配置
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 限制上傳文件大小為 16MB
+
+# 確保上傳目錄存在
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # configure the database, relative to the app instance folder
 database_url = os.environ.get("DATABASE_URL")
 if database_url:
@@ -39,6 +50,10 @@ else:
 
 # initialize the app with the extension, flask-sqlalchemy >= 3.0.x
 db.init_app(app)
+
+# 註冊檔案上傳藍圖
+from file_uploader import upload_bp
+app.register_blueprint(upload_bp)
 
 # 設置 login manager
 login_manager = LoginManager()
