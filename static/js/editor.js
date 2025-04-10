@@ -29,6 +29,52 @@ document.addEventListener('DOMContentLoaded', function() {
             force_root_block: "p",
             force_br_newlines: false,
             forced_root_block: "p",
+            
+            // 設置圖片上傳功能
+            images_upload_url: '/admin/upload',
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            
+            // 在成功上傳圖片後的處理
+            images_upload_handler: function (blobInfo, success, failure) {
+                var xhr, formData;
+                xhr = new XMLHttpRequest();
+                xhr.withCredentials = false;
+                xhr.open('POST', '/admin/upload');
+            
+                xhr.onload = function() {
+                    var json;
+                    
+                    if (xhr.status != 200) {
+                        failure('HTTP Error: ' + xhr.status);
+                        return;
+                    }
+                    
+                    try {
+                        json = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        failure('Invalid JSON: ' + xhr.responseText);
+                        return;
+                    }
+                    
+                    if (!json || typeof json.location != 'string') {
+                        failure('Invalid JSON structure: ' + xhr.responseText);
+                        return;
+                    }
+                    
+                    success(json.location);
+                };
+            
+                xhr.onerror = function () {
+                    failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+                };
+            
+                formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+            
+                xhr.send(formData);
+            },
+            
             // 移除語言設定，使用默認英文
             setup: function(editor) {
                 editor.on('change', function() {
