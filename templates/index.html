@@ -30,8 +30,190 @@
     <!-- favicon -->
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- jQuery (for navigation menu and portfolio pagination) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
+        /* 導航選單樣式 */
+        .nav-menu {
+            position: sticky;
+            top: 0;
+            background-color: rgba(40, 40, 40, 0.95);
+            padding: 12px 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin: 0 15px;
+        }
+        
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+            font-size: 15px;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--primary-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 作品展示區塊樣式 */
+        .portfolio-section {
+            grid-column: 1 / -1;
+            margin-top: 30px;
+            padding: 40px;
+            border-radius: 10px;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.85)), 
+                        url('{{ url_for("static", filename="images/cyberpunk_background.jpeg") }}');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+        }
+        
+        .portfolio-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .portfolio-item {
+            background-color: rgba(40, 40, 40, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .portfolio-content {
+            padding: 15px;
+        }
+        
+        .portfolio-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .portfolio-description {
+            font-size: 0.9em;
+            color: #ddd;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .portfolio-link {
+            display: block;
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        .portfolio-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+        
+        .portfolio-link a:hover {
+            color: #f4c563;
+        }
+        
+        /* 分頁控制樣式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pagination-button {
+            background-color: rgba(217, 119, 66, 0.2);
+            color: #fff;
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .pagination-button:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .pagination-button.active {
+            background-color: var(--primary-color);
+        }
+        
+        .pagination-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .nav-menu {
+                overflow-x: auto;
+            }
+            
+            .nav-menu ul {
+                flex-wrap: nowrap;
+                width: max-content;
+                padding: 0 10px;
+            }
+            
+            .nav-menu li {
+                margin: 0 10px;
+            }
+        }
+        
         /* 閱讀更多按鈕 */
         .read-more {
             text-align: right;
@@ -131,9 +313,22 @@
         {% endif %}
     {% endwith %}
     
+    <!-- 導航選單 -->
+    <nav class="nav-menu">
+        <div class="nav-container">
+            <ul>
+                <li><a href="#profile">個人簡介</a></li>
+                <li><a href="#services">服務項目</a></li>
+                <li><a href="#portfolio">作品展示</a></li>
+                <li><a href="#news">最新消息</a></li>
+                <li><a href="#contact">聯絡我</a></li>
+            </ul>
+        </div>
+    </nav>
+    
     <div class="container">
         <div class="temple-background" style="background-image: url({{ url_for('static', filename='images/temple_background.jpeg') }})"> 
-            <section class="profile"> 
+            <section id="profile" class="profile"> 
                 <div class="profile-image"> 
                     <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="蕭崇聖的照片"> 
                 </div> 
@@ -142,7 +337,7 @@
         </div>
         
         <div class="content">
-            <section class="contact-info">
+            <section id="contact" class="contact-info">
                 <h2>聯絡資訊</h2>
                 <div class="profile-text">
                     <div class="profile-text-container">
@@ -207,7 +402,7 @@
                 </form>
             </section>
             
-            <section class="services">
+            <section id="services" class="services">
                 <h2>服務項目</h2>
                 <ul class="service-list">
                     {% for service in services %}
@@ -230,8 +425,61 @@
                 </div>
             </section>
             
+            <!-- 作品展示區塊 -->
+            <section id="portfolio" class="portfolio-section">
+                <h2>作品展示</h2>
+                
+                <div class="portfolio-grid">
+                    {% if portfolios %}
+                        {% for portfolio in portfolios %}
+                            <div class="portfolio-item">
+                                {% if portfolio.image_path %}
+                                <img src="{{ url_for('static', filename=portfolio.image_path) }}" alt="{{ portfolio.title }}" class="portfolio-image">
+                                {% else %}
+                                <div class="portfolio-image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                {% endif %}
+                                <div class="portfolio-content">
+                                    <h3 class="portfolio-title">{{ portfolio.title }}</h3>
+                                    <div class="portfolio-description">{{ portfolio.description|safe }}</div>
+                                    <div class="portfolio-link">
+                                        <a href="{{ url_for('portfolio_detail', portfolio_id=portfolio.id) }}">查看詳情 <i class="fas fa-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-items-message">
+                            <p>目前還沒有作品展示，請稍後再查看。</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- 分頁控制 -->
+                {% if portfolio_pages > 1 %}
+                <div class="pagination">
+                    {% if portfolio_page > 1 %}
+                    <a href="{{ url_for('index', portfolio_page=portfolio_page-1) }}#portfolio" class="pagination-button">上一頁</a>
+                    {% else %}
+                    <span class="pagination-button disabled">上一頁</span>
+                    {% endif %}
+                    
+                    {% for i in range(1, portfolio_pages + 1) %}
+                    <a href="{{ url_for('index', portfolio_page=i) }}#portfolio" class="pagination-button {% if i == portfolio_page %}active{% endif %}">{{ i }}</a>
+                    {% endfor %}
+                    
+                    {% if portfolio_page < portfolio_pages %}
+                    <a href="{{ url_for('index', portfolio_page=portfolio_page+1) }}#portfolio" class="pagination-button">下一頁</a>
+                    {% else %}
+                    <span class="pagination-button disabled">下一頁</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+            
             <!-- 新的最新消息部分（獨立於兩欄布局之外） -->
-            <section class="news-section" style="background-image: url({{ url_for('static', filename='images/cyberpunk_fireplace_background.jpeg') }}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 50px; border-radius: 10px; margin-top: 30px; margin-bottom: 20px;">
+            <section id="news" class="news-section" style="background-image: url({{ url_for('static', filename='images/cyberpunk_fireplace_background.jpeg') }}); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 50px; border-radius: 10px; margin-top: 30px; margin-bottom: 20px;">
                 <h2 class="news-section-title">最新消息</h2>
                 
                 <div class="news-container" style="max-width: 700px; margin: 0 auto;">
@@ -290,6 +538,40 @@
                     message.style.display = 'none';
                 });
             }, 5000);
+            
+            // 導航選單平滑滾動效果
+            $('.nav-menu a').on('click', function(e) {
+                e.preventDefault();
+                
+                const target = $(this).attr('href');
+                
+                $('html, body').animate({
+                    scrollTop: $(target).offset().top - 60 // 導航菜單高度的補償
+                }, 800, 'swing', function() {
+                    // 滾動完成後更新 URL hash
+                    window.location.hash = target;
+                });
+            });
+            
+            // 滾動監聽，更新導航選單高亮項目
+            $(window).on('scroll', function() {
+                const scrollPosition = $(window).scrollTop() + 100; // 一些滾動位置的偏移
+                
+                // 檢查每一個區段
+                $('.nav-menu a').each(function() {
+                    const currentLink = $(this);
+                    const refElement = $(currentLink.attr('href'));
+                    
+                    // 如果滾動位置在當前區段內
+                    if (refElement.position().top <= scrollPosition && 
+                        refElement.position().top + refElement.height() > scrollPosition) {
+                        $('.nav-menu a').removeClass('active');
+                        currentLink.addClass('active');
+                    } else {
+                        currentLink.removeClass('active');
+                    }
+                });
+            });
         });
     </script>
 </body>
