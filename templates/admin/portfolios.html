@@ -1,0 +1,105 @@
+{% extends 'admin/layout.html' %}
+
+{% block title %}作品展示管理 - 管理後台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-header">
+        <h1>作品展示管理</h1>
+        <p>管理您的作品展示項目，請點擊下方按鈕添加新作品。</p>
+    </div>
+    
+    <!-- 成功或錯誤訊息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <div class="action-buttons">
+        <a href="{{ url_for('admin_portfolio_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> 添加新作品
+        </a>
+    </div>
+    
+    {% if portfolios %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>排序</th>
+                    <th>標題</th>
+                    <th>預覽圖</th>
+                    <th>建立日期</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for portfolio in portfolios %}
+                <tr>
+                    <td>{{ portfolio.order }}</td>
+                    <td>{{ portfolio.title }}</td>
+                    <td>
+                        {% if portfolio.image_path %}
+                        <img src="{{ url_for('static', filename=portfolio.image_path) }}" alt="{{ portfolio.title }}" style="max-height: 50px; max-width: 100px;">
+                        {% else %}
+                        <span class="no-image">無圖片</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ portfolio.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if portfolio.active %}
+                        <span class="status-active">啟用</span>
+                        {% else %}
+                        <span class="status-inactive">停用</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin_portfolio_edit', portfolio_id=portfolio.id) }}" class="btn btn-sm btn-info">
+                            <i class="fas fa-edit"></i> 編輯
+                        </a>
+                        
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ portfolio.id }}">
+                            <i class="fas fa-trash-alt"></i> 刪除
+                        </button>
+                        
+                        <!-- 刪除確認對話框 -->
+                        <div class="modal fade" id="deleteModal{{ portfolio.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ portfolio.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel{{ portfolio.id }}">確認刪除</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>您確定要刪除「{{ portfolio.title }}」嗎？此操作無法復原。</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                        <form action="{{ url_for('admin_portfolio_delete', portfolio_id=portfolio.id) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger">確認刪除</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <p>目前沒有作品展示項目。點擊「添加新作品」按鈕開始創建。</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

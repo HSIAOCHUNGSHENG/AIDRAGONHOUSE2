@@ -65,6 +65,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ url_for('admin_portfolios') }}" {% if request.endpoint == 'admin_portfolios' or request.endpoint == 'admin_portfolio_new' or request.endpoint == 'admin_portfolio_edit' %}class="active"{% endif %}>
+                            <i class="fas fa-images"></i> 作品展示
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ url_for('admin_profile') }}" {% if request.endpoint == 'admin_profile' %}class="active"{% endif %}>
                             <i class="fas fa-user-cog"></i> 個人設置
                         </a>

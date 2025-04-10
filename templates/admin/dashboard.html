@@ -60,6 +60,24 @@
                 </div>
             </div>
         </div>
+        
+        <div class="panel">
+            <div class="panel-title"><i class="fas fa-images"></i> 作品展示統計</div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-images"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.portfolio_count }}</div>
+                    <div class="stat-label">作品總數</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                <div class="stat-info">
+                    <div class="stat-value">{{ stats.active_portfolio_count }}</div>
+                    <div class="stat-label">顯示中作品</div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="quick-actions">
@@ -80,6 +98,10 @@
             <a href="{{ url_for('admin_contact') }}" class="action-card">
                 <i class="fas fa-address-card"></i>
                 <span>管理聯絡資訊</span>
+            </a>
+            <a href="{{ url_for('admin_portfolio_new') }}" class="action-card">
+                <i class="fas fa-images"></i>
+                <span>新增作品展示</span>
             </a>
         </div>
     </div>
